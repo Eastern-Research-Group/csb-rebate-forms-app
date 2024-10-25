@@ -146,7 +146,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
   } = req.body;
 
   const {
-    Id: entityId,
     UNIQUE_ENTITY_ID__c,
     ENTITY_EFT_INDICATOR__c,
     LEGAL_BUSINESS_NAME__c,
@@ -438,7 +437,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             _bap_applicant_name: name,
             _bap_applicant_efti: ENTITY_EFT_INDICATOR__c || "0000",
             _bap_applicant_uei: UNIQUE_ENTITY_ID__c,
-            _bap_applicant_organization_id: entityId,
+            _bap_applicant_organization_id: Applicant_Organization__r?.Id,
             _bap_applicant_organization_name: LEGAL_BUSINESS_NAME__c,
             _bap_applicant_street_address_1: PHYSICAL_ADDRESS_LINE_1__c,
             _bap_applicant_street_address_2: PHYSICAL_ADDRESS_LINE_2__c,

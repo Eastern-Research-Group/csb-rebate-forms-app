@@ -16,6 +16,7 @@ const { submissionPeriodOpen } = require("../config/formio");
 
 /**
  * @typedef {Object} BapSamEntity
+ * @property {{ type: "Data_Staging__c", url: string }} attributes
  * @property {string} Id
  * @property {string} ENTITY_COMBO_KEY__c
  * @property {string} UNIQUE_ENTITY_ID__c
@@ -42,14 +43,12 @@ const { submissionPeriodOpen } = require("../config/formio");
  * @property {?string} ALT_GOVT_BUS_POC_EMAIL__c
  * @property {?string} ALT_GOVT_BUS_POC_NAME__c
  * @property {?string} ALT_GOVT_BUS_POC_TITLE__c
- * @property {{
- *  type: string
- *  url: string
- * }} attributes
  */
 
 /**
  * @typedef {Object} BapFormSubmission
+ * @property {{ type: "Order_Request__c", url: string }} attributes
+ * @property {string} Id
  * @property {string} UEI_EFTI_Combo_Key__c
  * @property {string} CSB_Form_ID__c
  * @property {string} CSB_Modified_Full_String__c
@@ -67,72 +66,82 @@ const { submissionPeriodOpen } = require("../config/formio");
  * } Record_Type_Name__c
  * @property {string | null} Rebate_Program_Year__c
  * @property {{
+ *  attributes: { type: "Application__c", url: string }
+ *  Id: string
  *  CSB_Funding_Request_Status__c: string
  *  CSB_Payment_Request_Status__c: string
  *  CSB_Closeout_Request_Status__c: string
  *  Reimbursement_Needed__c: boolean
  * }} Parent_CSB_Rebate__r
- * @property {{
- *  type: string
- *  url: string
- * }} attributes
  */
 
 /**
  * @typedef {Object} BapDataFor2022PRF
  * @property {{
+ *  attributes: { type: "Order_Request__c", url: string }
  *  Id: string
  *  UEI_EFTI_Combo_Key__c: string
  *  CSB_NCES_ID__c: string
  *  Primary_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
  *    Name: string
  *    Title: string
  *    Phone: string
  *    Email: string
  *  }
  *  Alternate_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
  *    Name: string
  *    Title: string
  *    Phone: string
  *    Email: string
  *  } | null
  *  Applicant_Organization__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
  *    Name: string
  *  }
  *  CSB_School_District__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
  *    Name: string
  *  }
- *  Fleet_Name__c: string
- *  School_District_Prioritized__c: string
- *  Total_Rebate_Funds_Requested__c: string
- *  Total_Infrastructure_Funds__c: string
+ *  Fleet_Name__c: string | null
+ *  School_District_Prioritized__c: boolean
+ *  Total_Rebate_Funds_Requested__c: number
+ *  Total_Infrastructure_Funds__c: number
  * }[]} frf2022RecordQuery
  * @property {{
- *  Rebate_Item_num__c: string
+ *  attributes: { type: "Line_Item__c", url: string }
+ *  Id: string
+ *  Rebate_Item_num__c: number
  *  CSB_VIN__c: string
  *  CSB_Model_Year__c: string
  *  CSB_Fuel_Type__c: string
  *  CSB_Replacement_Fuel_Type__c: string
- *  CSB_Funds_Requested__c: string
+ *  CSB_Funds_Requested__c: number
  * }[]} frf2022BusRecordsQuery
- * @property {{
- *  type: string
- *  url: string
- * }} attributes
  */
 
 /**
  * @typedef {Object} BapDataFor2023PRF
  * @property {{
+ *  attributes: { type: "Order_Request__c", url: string }
  *  Id: string
  *  CSB_Snapshot__r: {
+ *    attributes: { type: "Data_Staging__c", url: string }
+ *    Id: string
  *    JSON_Snapshot__c: string
  *  }
  *  Applicant_Organization__r: {
+ *    attributes: { type: "Account", url: string }
  *    Id: string
  *    County__c: string
  *  }
  *  Primary_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
  *    Id: string
  *    FirstName: string
  *    LastName: string
@@ -141,6 +150,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    Phone: string
  *  } | null
  *  Alternate_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
  *    Id: string
  *    FirstName: string
  *    LastName: string
@@ -149,6 +159,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    Phone: string
  *  } | null
  *  CSB_School_District__r: {
+ *    attributes: { type: "Account", url: string }
  *    Id: string
  *    Name: string
  *    BillingStreet: string
@@ -157,6 +168,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    BillingPostalCode: string
  *  } | null
  *  School_District_Contact__r: {
+ *    attributes: { type: "Contact", url: string }
  *    Id: string
  *    FirstName: string
  *    LastName: string
@@ -167,36 +179,39 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  CSB_NCES_ID__c: string
  *  Org_District_Prioritized__c: string
  *  Self_Certification_Category__c: string
- *  Prioritized_as_High_Need__c: string
- *  Prioritized_as_Tribal__c: string
- *  Prioritized_as_Rural__c: string
+ *  Prioritized_as_High_Need__c: boolean
+ *  Prioritized_as_Tribal__c: boolean
+ *  Prioritized_as_Rural__c: boolean
  * }[]} frf2023RecordQuery
  * @property {{
+ *  attributes: { type: "Line_Item__c", url: string }
  *  Id: string
- *  Rebate_Item_num__c: string
+ *  Rebate_Item_num__c: number
  *  CSB_VIN__c: string
  *  CSB_Fuel_Type__c: string
- *  CSB_GVWR__c: string
- *  Old_Bus_Odometer_miles__c: string
+ *  CSB_GVWR__c: number
+ *  Old_Bus_Odometer_miles__c: number
  *  Old_Bus_NCES_District_ID__c: string
  *  CSB_Model__c: string
  *  CSB_Model_Year__c: string
  *  CSB_Manufacturer__c: string
- *  CSB_Manufacturer_if_Other__c: string
- *  CSB_Annual_Fuel_Consumption__c: string
- *  Annual_Mileage__c: string
- *  Old_Bus_Estimated_Remaining_Life__c: string
- *  Old_Bus_Annual_Idling_Hours__c: string
- *  New_Bus_Infra_Rebate_Requested__c: string
+ *  CSB_Manufacturer_if_Other__c: string | null
+ *  CSB_Annual_Fuel_Consumption__c: number
+ *  Annual_Mileage__c: number
+ *  Old_Bus_Estimated_Remaining_Life__c: number
+ *  Old_Bus_Annual_Idling_Hours__c: number
+ *  New_Bus_Infra_Rebate_Requested__c: number
  *  New_Bus_Fuel_Type__c: string
- *  New_Bus_GVWR__c: string
- *  New_Bus_ADA_Compliant__c: string
+ *  New_Bus_GVWR__c: number
+ *  New_Bus_ADA_Compliant__c: boolean
  * }[]} frf2023BusRecordsQuery
  * @property {{
+ *  attributes: { type: "Line_Item__c", url: string }
  *  Id: string
  *  Related_Line_Item__c: string
- *  Relationship_Type__c: string
+ *  Relationship_Type__c: 'Old Bus Private Fleet Owner (if changed)' | 'New Bus Owner'
  *  Contact__r: {
+ *    attributes: { type: "Contact", url: string }
  *    Id: string
  *    FirstName: string
  *    LastName: string
@@ -204,25 +219,24 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    Email: string
  *    Phone: string
  *    Account: {
+ *      attributes: { type: "Account", url: string }
  *      Id: string
  *      Name: string
  *      BillingStreet: string
  *      BillingCity: string
  *      BillingState: string
  *      BillingPostalCode: string
- *      County__c: string
+ *      County__c: string | null
  *    }
- *  } | null
+ *  }
  * }[]} frf2023BusRecordsContactsQueries
- * @property {{
- *  type: string
- *  url: string
- * }} attributes
  */
 
 /**
  * @typedef {Object} BapDataForFor2022CRF
  * @property {{
+ *  attributes: { type: "Order_Request__c", url: string }
+ *  Id: string
  *  Fleet_Name__c: string
  *  Fleet_Street_Address__c: string
  *  Fleet_City__c: string
@@ -233,15 +247,20 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Fleet_Contact_Phone__c: string
  *  Fleet_Contact_Email__c: string
  *  School_District_Contact__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
  *    FirstName: string
  *    LastName: string
  *  }
  * }[]} frf2022RecordQuery
  * @property {{
+ *  attributes: { type: "Order_Request__c", url: string }
  *  Id: string
  *  UEI_EFTI_Combo_Key__c: string
  *  CSB_NCES_ID__c: string
  *  Primary_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -249,6 +268,8 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    Email: string
  *  }
  *  Alternate_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -256,48 +277,52 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    Email: string
  *  } | null
  *  Applicant_Organization__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
  *    Name: string
  *  }
  *  CSB_School_District__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
  *    Name: string
  *  }
- *  School_District_Prioritized__c: string
- *  Total_Rebate_Funds_Requested_PO__c: string
- *  Total_Bus_And_Infrastructure_Rebate__c: string
- *  Total_Infrastructure_Funds__c: string
- *  Num_Of_Buses_Requested_From_Application__c: string
+ *  School_District_Prioritized__c: boolean
+ *  Total_Rebate_Funds_Requested_PO__c: number
+ *  Total_Bus_And_Infrastructure_Rebate__c: number
+ *  Total_Infrastructure_Funds__c: number | null
+ *  Num_Of_Buses_Requested_From_Application__c: number
  *  Total_Price_All_Buses__c: string
  *  Total_Bus_Rebate_Amount__c: string
- *  Total_All_Eligible_Infrastructure_Costs__c: string
- *  Total_Infrastructure_Rebate__c: string
- *  Total_Level_2_Charger_Costs__c: string
- *  Total_DC_Fast_Charger_Costs__c: string
- *  Total_Other_Infrastructure_Costs__c: string
+ *  Total_All_Eligible_Infrastructure_Costs__c: number | null
+ *  Total_Infrastructure_Rebate__c: number | null
+ *  Total_Level_2_Charger_Costs__c: number | null
+ *  Total_DC_Fast_Charger_Costs__c: number | null
+ *  Total_Other_Infrastructure_Costs__c: number | null
  * }[]} prf2022RecordQuery
  * @property {{
- *  Rebate_Item_num__c: string
+ *  attributes: { type: "Line_Item__c", url: string }
+ *  Id: string
+ *  Rebate_Item_num__c: number
  *  CSB_VIN__c: string
  *  CSB_Model_Year__c: string
  *  CSB_Fuel_Type__c: string
- *  CSB_Manufacturer_if_Other__c: string
+ *  CSB_Manufacturer_if_Other__c: string | null
  *  Old_Bus_NCES_District_ID__c: string
- *  Old_Bus_Estimated_Remaining_Life__c: string
- *  Old_Bus_Exclude__c: string
+ *  Old_Bus_Estimated_Remaining_Life__c: number
+ *  Old_Bus_Exclude__c: boolean
  *  Related_Line_Item__r: {
- *    Purchaser_Name__c: string
+ *    attributes: { type: "Line_Item__c", url: string }
+ *    Id: string
+ *    Vendor_Name__c: string
  *  }
  *  New_Bus_Fuel_Type__c: string
  *  New_Bus_Make__c: string
  *  New_Bus_Model__c: string
  *  New_Bus_Model_Year__c: string
- *  New_Bus_GVWR__c: string
- *  New_Bus_Rebate_Amount__c: string
- *  New_Bus_Purchase_Price__c: string
+ *  New_Bus_GVWR__c: number
+ *  New_Bus_Rebate_Amount__c: number
+ *  New_Bus_Purchase_Price__c: number
  * }[]} prf2022busRecordsQuery
- * @property {{
- *  type: string
- *  url: string
- * }} attributes
  */
 
 /**
@@ -314,8 +339,8 @@ const { submissionPeriodOpen } = require("../config/formio");
  *      AccountId: string
  *    },
  *    dupeConfRating: number
- *  dupeCount: number
- * }[]
+ *    dupeCount: number
+ *  }[]
  * }>} BapDuplicates
  */
 
@@ -421,7 +446,7 @@ async function queryForSamEntities(req, email) {
       },
       {
         // "*": 1,
-        Id: 1,
+        Id: 1, // Salesforce record ID
         ENTITY_COMBO_KEY__c: 1,
         UNIQUE_ENTITY_ID__c: 1,
         ENTITY_EFT_INDICATOR__c: 1,
@@ -530,6 +555,7 @@ async function queryForBapFormSubmissionData(
   const formRecordTypeId = formRecordTypeIdQuery["0"].Id;
 
   // `SELECT
+  //   Id,
   //   UEI_EFTI_Combo_Key__c,
   //   CSB_Form_ID__c,
   //   CSB_Modified_Full_String__c,
@@ -537,6 +563,7 @@ async function queryForBapFormSubmissionData(
   //   Parent_Rebate_ID__c,
   //   Record_Type_Name__c,
   //   Rebate_Program_Year__c,
+  //   Parent_CSB_Rebate__r.Id,
   //   Parent_CSB_Rebate__r.CSB_Funding_Request_Status__c,
   //   Parent_CSB_Rebate__r.CSB_Payment_Request_Status__c,
   //   Parent_CSB_Rebate__r.CSB_Closeout_Request_Status__c,
@@ -559,6 +586,7 @@ async function queryForBapFormSubmissionData(
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         UEI_EFTI_Combo_Key__c: 1,
         CSB_Form_ID__c: 1, // MongoDB ObjectId string
         CSB_Modified_Full_String__c: 1, // ISO 8601 date time string
@@ -566,6 +594,7 @@ async function queryForBapFormSubmissionData(
         Parent_Rebate_ID__c: 1, // CSB Rebate ID (6 digits)
         Record_Type_Name__c: 1, // 'CSB Funding Request' | 'CSB Payment Request' | 'CSB Close Out Request' | same three forms with rebate year (.e.g., 'CSB Funding Request 2023')
         Rebate_Program_Year__c: 1, // '2022' | '2023' | '2024'
+        "Parent_CSB_Rebate__r.Id": 1,
         "Parent_CSB_Rebate__r.CSB_Funding_Request_Status__c": 1,
         "Parent_CSB_Rebate__r.CSB_Payment_Request_Status__c": 1,
         "Parent_CSB_Rebate__r.CSB_Closeout_Request_Status__c": 1,
@@ -597,14 +626,17 @@ async function queryForBapFormSubmissionsStatuses(req) {
   const { bapConnection } = req.app.locals;
 
   // `SELECT
-  //   Parent_Rebate_ID__c,
+  //   Id,
+  //   Parent_Rebate_ID__c
   // FROM
   //   Order_Request__c
   // WHERE
   //   (${bapComboKeys
   //     .map((key) => `UEI_EFTI_Combo_Key__c = '${key}'`)
   //     .join(" OR ")}) AND
-  //   Latest_Version__c = TRUE`
+  //   Latest_Version__c = TRUE
+  // ORDER BY
+  //   CreatedDate DESC`
 
   const csbRebateIdsQuery = await bapConnection
     .sobject("Order_Request__c")
@@ -615,6 +647,7 @@ async function queryForBapFormSubmissionsStatuses(req) {
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         Parent_Rebate_ID__c: 1, // CSB Rebate ID (6 digits)
       },
     )
@@ -628,6 +661,7 @@ async function queryForBapFormSubmissionsStatuses(req) {
   if (csbRebateIds.length === 0) return [];
 
   // `SELECT
+  //   Id,
   //   UEI_EFTI_Combo_Key__c,
   //   CSB_Form_ID__c,
   //   CSB_Modified_Full_String__c,
@@ -635,6 +669,7 @@ async function queryForBapFormSubmissionsStatuses(req) {
   //   Parent_Rebate_ID__c,
   //   Record_Type_Name__c,
   //   Rebate_Program_Year__c,
+  //   Parent_CSB_Rebate__r.Id,
   //   Parent_CSB_Rebate__r.CSB_Funding_Request_Status__c,
   //   Parent_CSB_Rebate__r.CSB_Payment_Request_Status__c,
   //   Parent_CSB_Rebate__r.CSB_Closeout_Request_Status__c,
@@ -658,6 +693,7 @@ async function queryForBapFormSubmissionsStatuses(req) {
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         UEI_EFTI_Combo_Key__c: 1,
         CSB_Form_ID__c: 1, // MongoDB ObjectId string
         CSB_Modified_Full_String__c: 1, // ISO 8601 date time string
@@ -665,6 +701,7 @@ async function queryForBapFormSubmissionsStatuses(req) {
         Parent_Rebate_ID__c: 1, // CSB Rebate ID (6 digits)
         Record_Type_Name__c: 1, // 'CSB Funding Request' | 'CSB Payment Request' | 'CSB Close Out Request' | 'CSB Funding Request 2023' | 'CSB Payment Request 2023' | 'CSB Close Out Request 2023'
         Rebate_Program_Year__c: 1, // '2022' | '2023' | '2024'
+        "Parent_CSB_Rebate__r.Id": 1,
         "Parent_CSB_Rebate__r.CSB_Funding_Request_Status__c": 1,
         "Parent_CSB_Rebate__r.CSB_Payment_Request_Status__c": 1,
         "Parent_CSB_Rebate__r.CSB_Closeout_Request_Status__c": 1,
@@ -724,15 +761,19 @@ async function queryBapFor2022PRFData(req, frfReviewItemId) {
   //   Id,
   //   UEI_EFTI_Combo_Key__c,
   //   CSB_NCES_ID__c,
+  //   Primary_Applicant__r.Id,
   //   Primary_Applicant__r.Name,
   //   Primary_Applicant__r.Title,
   //   Primary_Applicant__r.Phone,
   //   Primary_Applicant__r.Email,
+  //   Alternate_Applicant__r.Id,
   //   Alternate_Applicant__r.Name,
   //   Alternate_Applicant__r.Title,
   //   Alternate_Applicant__r.Phone,
   //   Alternate_Applicant__r.Email,
+  //   Applicant_Organization__r.Id,
   //   Applicant_Organization__r.Name,
+  //   CSB_School_District__r.Id,
   //   CSB_School_District__r.Name,
   //   Fleet_Name__c,
   //   School_District_Prioritized__c,
@@ -758,15 +799,19 @@ async function queryBapFor2022PRFData(req, frfReviewItemId) {
         Id: 1, // Salesforce record ID
         UEI_EFTI_Combo_Key__c: 1,
         CSB_NCES_ID__c: 1,
+        "Primary_Applicant__r.Id": 1,
         "Primary_Applicant__r.Name": 1,
         "Primary_Applicant__r.Title": 1,
         "Primary_Applicant__r.Phone": 1,
         "Primary_Applicant__r.Email": 1,
+        "Alternate_Applicant__r.Id": 1,
         "Alternate_Applicant__r.Name": 1,
         "Alternate_Applicant__r.Title": 1,
         "Alternate_Applicant__r.Phone": 1,
         "Alternate_Applicant__r.Email": 1,
+        "Applicant_Organization__r.Id": 1,
         "Applicant_Organization__r.Name": 1,
+        "CSB_School_District__r.Id": 1,
         "CSB_School_District__r.Name": 1,
         Fleet_Name__c: 1,
         School_District_Prioritized__c: 1,
@@ -805,6 +850,7 @@ async function queryBapFor2022PRFData(req, frfReviewItemId) {
   const rebateItemRecordTypeId = rebateItemRecordTypeIdQuery["0"].Id;
 
   // `SELECT
+  //   Id,
   //   Rebate_Item_num__c,
   //   CSB_VIN__c,
   //   CSB_Model_Year__c,
@@ -828,6 +874,7 @@ async function queryBapFor2022PRFData(req, frfReviewItemId) {
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         Rebate_Item_num__c: 1,
         CSB_VIN__c: 1,
         CSB_Model_Year__c: 1,
@@ -886,6 +933,7 @@ async function queryBapFor2023PRFData(req, frfReviewItemId) {
 
   // `SELECT
   //   Id,
+  //   CSB_Snapshot__r.Id,
   //   CSB_Snapshot__r.JSON_Snapshot__c
   //   Applicant_Organization__r.Id
   //   Applicant_Organization__r.County__c
@@ -937,6 +985,7 @@ async function queryBapFor2023PRFData(req, frfReviewItemId) {
       {
         // "*": 1,
         Id: 1, // Salesforce record ID
+        "CSB_Snapshot__r.Id": 1,
         "CSB_Snapshot__r.JSON_Snapshot__c": 1,
         "Applicant_Organization__r.Id": 1,
         "Applicant_Organization__r.County__c": 1,
@@ -1178,6 +1227,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   const frf2022RecordTypeId = frf2022RecordTypeIdQuery["0"].Id;
 
   // `SELECT
+  //   Id,
   //   Fleet_Name__c,
   //   Fleet_Street_Address__c,
   //   Fleet_City__c,
@@ -1187,6 +1237,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   //   Fleet_Contact_Title__c,
   //   Fleet_Contact_Phone__c,
   //   Fleet_Contact_Email__c,
+  //   School_District_Contact__r.Id,
   //   School_District_Contact__r.FirstName,
   //   School_District_Contact__r.LastName
   // FROM
@@ -1206,6 +1257,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         Fleet_Name__c: 1,
         Fleet_Street_Address__c: 1,
         Fleet_City__c: 1,
@@ -1215,6 +1267,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
         Fleet_Contact_Title__c: 1,
         Fleet_Contact_Phone__c: 1,
         Fleet_Contact_Email__c: 1,
+        "School_District_Contact__r.Id": 1,
         "School_District_Contact__r.FirstName": 1,
         "School_District_Contact__r.LastName": 1,
       },
@@ -1251,17 +1304,21 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   //   Id,
   //   UEI_EFTI_Combo_Key__c,
   //   CSB_NCES_ID__c,
+  //   Primary_Applicant__r.Id,
   //   Primary_Applicant__r.FirstName,
   //   Primary_Applicant__r.LastName,
   //   Primary_Applicant__r.Title,
   //   Primary_Applicant__r.Phone,
   //   Primary_Applicant__r.Email,
+  //   Alternate_Applicant__r.Id,
   //   Alternate_Applicant__r.FirstName,
   //   Alternate_Applicant__r.LastName,
   //   Alternate_Applicant__r.Title,
   //   Alternate_Applicant__r.Phone,
   //   Alternate_Applicant__r.Email,
+  //   Applicant_Organization__r.Id,
   //   Applicant_Organization__r.Name,
+  //   CSB_School_District__r.Id,
   //   CSB_School_District__r.Name,
   //   School_District_Prioritized__c,
   //   Total_Rebate_Funds_Requested_PO__c,
@@ -1295,17 +1352,21 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
         Id: 1, // Salesforce record ID
         UEI_EFTI_Combo_Key__c: 1,
         CSB_NCES_ID__c: 1,
+        "Primary_Applicant__r.Id": 1,
         "Primary_Applicant__r.FirstName": 1,
         "Primary_Applicant__r.LastName": 1,
         "Primary_Applicant__r.Title": 1,
         "Primary_Applicant__r.Phone": 1,
         "Primary_Applicant__r.Email": 1,
+        "Alternate_Applicant__r.Id": 1,
         "Alternate_Applicant__r.FirstName": 1,
         "Alternate_Applicant__r.LastName": 1,
         "Alternate_Applicant__r.Title": 1,
         "Alternate_Applicant__r.Phone": 1,
         "Alternate_Applicant__r.Email": 1,
+        "Applicant_Organization__r.Id": 1,
         "Applicant_Organization__r.Name": 1,
+        "CSB_School_District__r.Id": 1,
         "CSB_School_District__r.Name": 1,
         School_District_Prioritized__c: 1,
         Total_Rebate_Funds_Requested_PO__c: 1,
@@ -1352,6 +1413,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   const rebateItemRecordTypeId = rebateItemRecordTypeIdQuery["0"].Id;
 
   // `SELECT
+  //   Id,
   //   Rebate_Item_num__c,
   //   CSB_VIN__c,
   //   CSB_Model_Year__c,
@@ -1360,7 +1422,8 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   //   Old_Bus_NCES_District_ID__c,
   //   Old_Bus_Estimated_Remaining_Life__c,
   //   Old_Bus_Exclude__c,
-  //   Related_Line_Item__r.Purchaser_Name__c,
+  //   Related_Line_Item__r.Id,
+  //   Related_Line_Item__r.Vendor_Name__c,
   //   New_Bus_Fuel_Type__c,
   //   New_Bus_Make__c,
   //   New_Bus_Model__c,
@@ -1385,6 +1448,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
       },
       {
         // "*": 1,
+        Id: 1, // Salesforce record ID
         Rebate_Item_num__c: 1,
         CSB_VIN__c: 1,
         CSB_Model_Year__c: 1,
@@ -1393,6 +1457,7 @@ async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
         Old_Bus_NCES_District_ID__c: 1,
         Old_Bus_Estimated_Remaining_Life__c: 1,
         Old_Bus_Exclude__c: 1,
+        "Related_Line_Item__r.Id": 1,
         "Related_Line_Item__r.Vendor_Name__c": 1,
         New_Bus_Fuel_Type__c: 1,
         New_Bus_Make__c: 1,

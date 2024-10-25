@@ -1936,7 +1936,7 @@ function Submissions2024() {
 
       <div className="usa-table-container--scrollable" tabIndex={0}>
         <table
-          aria-label="Your 2023 Rebate Forms"
+          aria-label="Your 2024 Rebate Forms"
           className="usa-table usa-table--stacked usa-table--borderless width-full"
         >
           <SubmissionsTableHeader rebateYear="2024" />

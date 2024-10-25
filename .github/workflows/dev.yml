@@ -41,7 +41,7 @@ jobs:
       # SAML_PRIVATE_KEY: ${{ secrets.SAML_PRIVATE_KEY }}
       JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
-      CSB_REBATE_YEAR: 2023
+      CSB_REBATE_YEAR: 2024
       CSB_2022_FRF_OPEN: true
       CSB_2022_PRF_OPEN: true
       CSB_2022_CRF_OPEN: true
@@ -96,11 +96,11 @@ jobs:
         run: echo "//pkg.form.io/:_authToken=${FORMIO_PKG_AUTH_TOKEN}" > .npmrc
         working-directory: app/client
 
-      - name: Install front-end dependencies
+      - name: Install client app dependencies
         run: npm install
         working-directory: app/client
 
-      - name: Build front-end files and move to server
+      - name: Build client app and move files to server app
         run: |
           VITE_SERVER_BASE_PATH="$SERVER_BASE_PATH" \
             VITE_CLOUD_SPACE="$CLOUD_SPACE" \
@@ -122,7 +122,7 @@ jobs:
           cf auth "$CF_USER_DEV" "$CF_PASSWORD_DEV"
           cf target -o "$CF_ORG" -s "$CF_SPACE"
 
-      - name: Set application-level variables
+      - name: Set application level variables
         run: |
           cf set-env $APP_NAME "CLOUD_SPACE" "$CLOUD_SPACE" > /dev/null
           cf set-env $APP_NAME "SERVER_URL" "$SERVER_URL" > /dev/null
@@ -177,7 +177,7 @@ jobs:
         run: aws s3api put-bucket-cors --bucket $S3_PUBLIC_BUCKET --cors-configuration file://s3CORS.json
         working-directory: app/server/app/config
 
-      # Now that front-end is built in server/dist, only push server dir to Cloud.gov
+      # Now that client is built and included in server app, only push server app to Cloud.gov
       - name: Deploy application to Cloud.gov
         run: cf push $APP_NAME --strategy rolling -f ../manifest-dev.yml -p . -t 180
         working-directory: app/server

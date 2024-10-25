@@ -45,7 +45,7 @@ jobs:
           restore-keys: v1-npm-server-deps-
 
       - name: Install server app dependencies
-        run: npm install
+        run: npm install --production
         working-directory: app/server
 
       - name: Cache client app node modules
@@ -63,7 +63,7 @@ jobs:
         run: npm install
         working-directory: app/client
 
-      - name: Build client app
+      - name: Build client app and move files to server app
         run: |
           VITE_SERVER_BASE_PATH="$SERVER_BASE_PATH" \
             VITE_CLOUD_SPACE="$CLOUD_SPACE" \

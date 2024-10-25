@@ -10,7 +10,10 @@
     "Devin Galloway <devin.galloway@erg.com>"
   ],
   "devDependencies": {
+    "@playwright/test": "1.48.1",
+    "@types/node": "22.7.9",
     "concurrently": "9.0.0",
+    "dotenv": "16.4.5",
     "husky": "9.1.5",
     "lint-staged": "15.2.10",
     "prettier": "3.3.3",
@@ -19,7 +22,8 @@
   "scripts": {
     "client": "cd client && npm run dev",
     "server": "cd server && npm start",
-    "start": "concurrently -kc \"blue.dim,green.dim\" \"npm:server\" \"npm:client\""
+    "start": "concurrently -kc \"blue.dim,green.dim\" \"npm:server\" \"npm:client\"",
+    "test": "playwright test --ui"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"

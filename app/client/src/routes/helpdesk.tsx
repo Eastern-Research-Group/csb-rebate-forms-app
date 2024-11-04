@@ -48,22 +48,20 @@ import {
   useRebateYearActions,
 } from "@/contexts/rebateYear";
 
-type Response =
-  | {
-      formSchema: null;
-      formio: null;
-      bap: BapSubmissionData;
-    }
-  | {
-      formSchema: { url: string; json: object };
-      formio:
+type Response = {
+  rebateId: string | null;
+  formSchema: { url: string; json: object } | null;
+  formio:
+    | (
         | FormioFRF2022Submission
         | FormioPRF2022Submission
         | FormioCRF2022Submission
         | FormioFRF2023Submission
-        | FormioPRF2023Submission;
-      bap: BapSubmissionData;
-    };
+        | FormioPRF2023Submission
+      )
+    | null;
+  bap: BapSubmissionData | null;
+};
 
 type SubmissionAction = {
   _id: string; // MongoDB ObjectId string
@@ -120,22 +118,22 @@ function ResultTableRow(props: {
     DraftSubmission,
     unknown
   >;
-  lastSearchedText: string;
   formType: FormType;
+  rebateId: string | null;
   formio:
     | FormioFRF2022Submission
     | FormioPRF2022Submission
     | FormioCRF2022Submission
     | FormioFRF2023Submission
     | FormioPRF2023Submission;
-  bap: BapSubmissionData;
+  bap: BapSubmissionData | null;
 }) {
   const {
     setFormDisplayed,
     setActionsData,
     submissionMutation,
-    lastSearchedText,
     formType,
+    rebateId,
     formio,
     bap,
   } = props;
@@ -180,11 +178,11 @@ function ResultTableRow(props: {
   const date = formatDate(formio.modified);
   const time = formatTime(formio.modified);
 
-  const bapId = lastSearchedText.length === 6 ? bap.rebateId : bap.mongoId;
+  const bapInternalStatus = bap?.status || "";
+  const bapReimbursementNeeded = bap?.reimbursementNeeded || false;
 
-  const bapInternalStatus = bap.status || "";
+  const bapStatus = bapStatusMap[rebateYear][formType].get(bapInternalStatus);
   const formioStatus = formioStatusMap.get(formio.state);
-  const bapReimbursementNeeded = bap.reimbursementNeeded || false;
 
   const needsEdits = submissionNeedsEdits({ formio, bap });
 
@@ -199,9 +197,7 @@ function ResultTableRow(props: {
     ? "Edits Requested"
     : crfNeedsReimbursement
       ? "Reimbursement Needed"
-      : bapStatusMap[rebateYear][formType].get(bapInternalStatus) ||
-        formioStatus ||
-        "";
+      : bapStatus || formioStatus || "";
 
   const nameField = formioNameField[rebateYear][formType];
   const emailField = formioEmailField[rebateYear][formType];
@@ -229,11 +225,11 @@ function ResultTableRow(props: {
           </span>
         </button>
       </th>
-      <td>{bapId || mongoId}</td>
+      <td>{rebateId || mongoId}</td>
       <td>
         {status}
 
-        {!bapId && status === "Submitted" && (
+        {!bap && status === "Submitted" && (
           <span className="margin-left-2">
             <button
               className="usa-button font-sans-2xs margin-right-0 padding-x-105 padding-y-1"
@@ -387,7 +383,6 @@ export function Helpdesk() {
 
   const [formType, setFormType] = useState<FormType>("frf");
   const [searchText, setSearchText] = useState("");
-  const [lastSearchedText, setLastSearchedText] = useState("");
   const [resultDisplayed, setResultDisplayed] = useState(false);
   const [formDisplayed, setFormDisplayed] = useState(false);
   const [actionsData, setActionsData] = useState<{
@@ -426,7 +421,12 @@ export function Helpdesk() {
     },
   });
 
-  const { formSchema, formio, bap } = submissionQuery.data ?? {};
+  const { rebateId, formSchema, formio, bap } = submissionQuery.data ?? {
+    rebateId: null,
+    formSchema: null,
+    formio: null,
+    bap: null,
+  };
 
   if (helpdeskAccess === "pending") {
     return <Loading />;
@@ -557,7 +557,6 @@ export function Helpdesk() {
             onSubmit={(ev) => {
               ev.preventDefault();
               if (searchText === "") return;
-              setLastSearchedText(searchText);
               setFormDisplayed(false);
               setActionsData({ fetched: false, results: [] });
               submissionQuery.refetch();
@@ -590,7 +589,7 @@ export function Helpdesk() {
         <Loading />
       ) : submissionQuery.isError ? (
         <Message type="error" text={messages.helpdeskSubmissionSearchError} />
-      ) : submissionQuery.isSuccess && !!formio && !!bap && resultDisplayed ? (
+      ) : submissionQuery.isSuccess && !!formio && resultDisplayed ? (
         <>
           <div className="usa-table-container--scrollable" tabIndex={0}>
             <table
@@ -603,7 +602,7 @@ export function Helpdesk() {
                     <span className="usa-sr-only">Open</span>
                   </th>
 
-                  {lastSearchedText.length === 6 ? (
+                  {rebateId ? (
                     <th scope="col">
                       <TextWithTooltip
                         text="Rebate ID"
@@ -668,8 +667,8 @@ export function Helpdesk() {
                   setFormDisplayed={setFormDisplayed}
                   setActionsData={setActionsData}
                   submissionMutation={submissionMutation}
-                  lastSearchedText={lastSearchedText}
                   formType={formType}
+                  rebateId={rebateId}
                   formio={formio}
                   bap={bap}
                 />
@@ -732,12 +731,11 @@ export function Helpdesk() {
                     </svg>
                   </div>
                   <div className="usa-icon-list__content">
-                    <strong>MongoDB Object ID:</strong>{" "}
-                    {bap.mongoId || formio._id}
+                    <strong>MongoDB Object ID:</strong> {formio._id}
                   </div>
                 </li>
 
-                {bap.rebateId && (
+                {rebateId && (
                   <li className="usa-icon-list__item">
                     <div className="usa-icon-list__icon text-primary">
                       <svg className="usa-icon" aria-hidden="true" role="img">
@@ -745,7 +743,7 @@ export function Helpdesk() {
                       </svg>
                     </div>
                     <div className="usa-icon-list__content">
-                      <strong>Rebate ID:</strong> {bap.rebateId}
+                      <strong>Rebate ID:</strong> {rebateId}
                     </div>
                   </li>
                 )}

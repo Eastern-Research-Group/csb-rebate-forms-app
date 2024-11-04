@@ -154,6 +154,7 @@ router.get("/formio/submission/:rebateYear/:formType/:id", async (req, res) => {
   const { rebateYear, formType, id } = req.params;
 
   const result = {
+    rebateId: null,
     formSchema: null,
     formio: null,
     bap: null,
@@ -235,7 +236,13 @@ router.get("/formio/submission/:rebateYear/:formType/:id", async (req, res) => {
     return res.status(errorStatus).json({ message: errorMessage });
   }
 
-  return res.json(result);
+  const bapRebateId = result.bap?.rebateId;
+  const formioRebateId = result.formio?.data?.[rebateIdFieldName];
+
+  return res.json({
+    ...result,
+    rebateId: bapRebateId || formioRebateId || null,
+  });
 });
 
 // --- post an update to an existing form submission to Formio (change submission to 'draft')

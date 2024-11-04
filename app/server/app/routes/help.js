@@ -45,9 +45,9 @@ function fetchFormioFormSchema({ formioFormUrl, req }) {
     .get(formioFormUrl)
     .then((axiosRes) => axiosRes.data)
     .then((schema) => ({ url: formioFormUrl, json: schema }))
-    .catch((error) => {
+    .catch((_error) => {
       // NOTE: error is logged in axiosFormio response interceptor
-      throw error;
+      return null;
     });
 }
 
@@ -81,9 +81,9 @@ function fetchFormioSubmissionData({ formioSubmissionUrl, id, req }) {
       const result = id === "rebateId" ? json[0] : json;
       return result || null;
     })
-    .catch((error) => {
+    .catch((_error) => {
       // NOTE: error is logged in axiosFormio response interceptor
-      throw error;
+      return null;
     });
 }
 

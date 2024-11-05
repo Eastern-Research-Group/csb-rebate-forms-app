@@ -10,6 +10,7 @@ const {
 } = require("../config/formio");
 const { ensureAuthenticated, ensureHelpdesk } = require("../middleware");
 const { getBapFormSubmissionData } = require("../utilities/bap");
+const { getRebateIdFieldName } = require("../utilities/formio");
 
 /**
  * @typedef {'2022' | '2023' | '2024'} RebateYear
@@ -32,33 +33,143 @@ const formioFormNameMap = new Map()
   .set("crf", "CSB Close Out");
 
 /**
- * Fetches data associated with a provided form submission from Formio.
+ * Fetches Formio form schema when provided a Formio form url.
  *
- * @param {Object} param
- * @param {RebateYear} param.rebateYear
- * @param {FormType} param.formType
- * @param {string} param.mongoId
  * @param {{
- *  modified: string | null
- *  comboKey: string | null
- *  mongoId: string | null
- *  rebateId: string | null
- *  reviewItemId: string | null
- *  status: string | null
- * }} param.bap
- * @param {express.Request} param.req
- * @param {express.Response} param.res
+ *  formioFormUrl: string
+ *  req: express.Request
+ * }} param
  */
-function fetchFormioSubmission({
+function fetchFormioFormSchema({ formioFormUrl, req }) {
+  return axiosFormio(req)
+    .get(formioFormUrl)
+    .then((axiosRes) => axiosRes.data)
+    .then((schema) => ({ url: formioFormUrl, json: schema }))
+    .catch((_error) => {
+      // NOTE: error is logged in axiosFormio response interceptor
+      return null;
+    });
+}
+
+/**
+ * Fetches Formio form submission data when provided a Formio submission url.
+ *
+ * @param {{
+ *  formioSubmissionUrl: string
+ *  id: 'rebateId' | 'mongoId'
+ *  req: express.Request
+ * }} param
+ */
+function fetchFormioSubmissionData({ formioSubmissionUrl, id, req }) {
+  /**
+   * NOTE:
+   * If the provided id is 'rebateId', the provided formSubmissionUrl includes
+   * the rebateId within it and we'll query Formio for all submissions that
+   * include the rebateId field and its value (which should only be one
+   * submission). In that case, the Formio query's response will be an array of
+   * submission objects, so we'll return the first one.
+   *
+   * Else, if the provided id is 'mongoId', the provided formSubmissionUrl
+   * includes the mongoId within it and we'll query Formio for the single
+   * submission. In that case, the Formio query's response will be a single
+   * submission object, so we'll return it.
+   */
+  return axiosFormio(req)
+    .get(formioSubmissionUrl)
+    .then((axiosRes) => axiosRes.data)
+    .then((json) => {
+      const result = id === "rebateId" ? json[0] : json;
+      return result || null;
+    })
+    .catch((_error) => {
+      // NOTE: error is logged in axiosFormio response interceptor
+      return null;
+    });
+}
+
+/**
+ * Fetches BAP form submission data for a given rebate form.
+ *
+ * @param {{
+ *  rebateYear: RebateYear
+ *  formType: FormType
+ *  rebateId: string | null
+ *  mongoId: string | null
+ *  req: express.Request
+ * }} param
+ */
+function fetchBapSubmissionData({
   rebateYear,
   formType,
+  rebateId,
   mongoId,
-  bap,
   req,
-  res,
 }) {
+  return getBapFormSubmissionData({
+    rebateYear,
+    formType,
+    rebateId,
+    mongoId,
+    req,
+  }).then((json) => {
+    if (!json) return null;
+
+    const {
+      UEI_EFTI_Combo_Key__c,
+      CSB_Form_ID__c,
+      CSB_Modified_Full_String__c,
+      CSB_Review_Item_ID__c,
+      Parent_Rebate_ID__c,
+      Record_Type_Name__c,
+      Parent_CSB_Rebate__r,
+    } = json;
+
+    const {
+      CSB_Funding_Request_Status__c,
+      CSB_Payment_Request_Status__c,
+      CSB_Closeout_Request_Status__c,
+      Reimbursement_Needed__c,
+    } = Parent_CSB_Rebate__r ?? {};
+
+    return {
+      modified: CSB_Modified_Full_String__c, // ISO 8601 date time string
+      comboKey: UEI_EFTI_Combo_Key__c, // UEI + EFTI combo key
+      mongoId: CSB_Form_ID__c, // MongoDB Object ID
+      rebateId: Parent_Rebate_ID__c, // CSB Rebate ID (6 digits)
+      reviewItemId: CSB_Review_Item_ID__c, // CSB Rebate ID with form/version ID (9 digits)
+      status: Record_Type_Name__c?.startsWith("CSB Funding Request")
+        ? CSB_Funding_Request_Status__c
+        : Record_Type_Name__c?.startsWith("CSB Payment Request")
+          ? CSB_Payment_Request_Status__c
+          : Record_Type_Name__c?.startsWith("CSB Close Out Request")
+            ? CSB_Closeout_Request_Status__c
+            : "",
+      reimbursementNeeded: Reimbursement_Needed__c,
+    };
+  });
+}
+
+// --- get an existing form's submission data from Formio and the BAP
+router.get("/formio/submission/:rebateYear/:formType/:id", async (req, res) => {
+  const { rebateYear, formType, id } = req.params;
+
+  const result = {
+    rebateId: null,
+    formSchema: null,
+    formio: null,
+    bap: null,
+  };
+
+  // NOTE: included to support EPA API scan
+  if (id === formioExampleRebateId) {
+    return res.json({});
+  }
+
+  const rebateId = id.length === 6 ? id : null;
+  const mongoId = !rebateId ? id : null;
+
   /** NOTE: verifyMongoObjectId */
-  if (!ObjectId.isValid(mongoId)) {
+  if (mongoId && !ObjectId.isValid(mongoId)) {
     const errorStatus = 400;
     const errorMessage = `MongoDB ObjectId validation error for: '${mongoId}'.`;
     return res.status(errorStatus).json({ message: errorMessage });
@@ -69,103 +180,68 @@ function fetchFormioSubmission({
 
   if (!formioFormUrl) {
     const errorStatus = 400;
-    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formName}.`;
+    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formName} form.`;
     return res.status(errorStatus).json({ message: errorMessage });
   }
 
-  return Promise.all([
-    axiosFormio(req).get(`${formioFormUrl}/submission/${mongoId}`),
-    axiosFormio(req).get(formioFormUrl),
-  ])
-    .then((responses) => responses.map((axiosRes) => axiosRes.data))
-    .then(([formioSubmission, schema]) => {
-      return res.json({
-        formSchema: { url: formioFormUrl, json: schema },
-        formio: formioSubmission,
-        bap,
-      });
-    })
-    .catch((error) => {
-      // NOTE: error is logged in axiosFormio response interceptor
-      const errorStatus = error.response?.status || 500;
-      const errorMessage = `Error getting Formio ${rebateYear} ${formName} form submission '${mongoId}'.`;
-      return res.status(errorStatus).json({ message: errorMessage });
-    });
-}
+  result.formSchema = await fetchFormioFormSchema({ formioFormUrl, req });
 
-// --- get an existing form's submission data from Formio
-router.get("/formio/submission/:rebateYear/:formType/:id", (req, res) => {
-  const { rebateYear, formType, id } = req.params;
-
-  // NOTE: included to support EPA API scan
-  if (id === formioExampleRebateId) {
-    return res.json({});
+  if (!result.formSchema) {
+    const errorStatus = 400;
+    const errorMessage = `Error getting Formio ${rebateYear} ${formName} form schema.`;
+    return res.status(errorStatus).json({ message: errorMessage });
   }
 
-  const rebateId = id.length === 6 ? id : null;
-  const mongoId = !rebateId ? id : null;
+  const rebateIdFieldName = getRebateIdFieldName({ rebateYear });
+  const formioSubmissionUrl = rebateId
+    ? `${formioFormUrl}/submission?data.${rebateIdFieldName}=${rebateId}`
+    : `${formioFormUrl}/submission/${mongoId}`;
 
-  return getBapFormSubmissionData({
+  /**
+   * NOTE: FRF submissions don't include a CSB Rebate Id field, as it's created
+   * by the BAP after they ETL the FRF submissions. So if the user searched for
+   * an FRF submission with a CSB Rebate Id, we'll need to use the returned
+   * MongoDB ObjectId from the upcoming BAP query's response and then attempt to
+   * re-fetch the formio submission data using that mongoId.
+   */
+  result.formio =
+    rebateId && formType === "frf"
+      ? null
+      : await fetchFormioSubmissionData({
+          formioSubmissionUrl,
+          id: rebateId ? "rebateId" : "mongoId",
+          req,
+        });
+
+  result.bap = await fetchBapSubmissionData({
     rebateYear,
     formType,
     rebateId,
     mongoId,
     req,
-  }).then((bapSubmission) => {
-    /**
-     * NOTE: Some submissions will not be returned from the BAP (e.g., drafts or
-     * submissions not yet picked up by the BAP ETLs).
-     */
-    if (!bapSubmission && !mongoId) {
-      const errorStatus = 400;
-      const errorMessage = `A valid MongoDB ObjectId must be provided for submissions not yet picked up by the BAP.`;
-      return res.status(errorStatus).json({ message: errorMessage });
-    }
+  });
 
-    const {
-      UEI_EFTI_Combo_Key__c,
-      CSB_Form_ID__c,
-      CSB_Modified_Full_String__c,
-      CSB_Review_Item_ID__c,
-      Parent_Rebate_ID__c,
-      Record_Type_Name__c,
-      Parent_CSB_Rebate__r,
-    } = bapSubmission ?? {};
-
-    const {
-      CSB_Funding_Request_Status__c,
-      CSB_Payment_Request_Status__c,
-      CSB_Closeout_Request_Status__c,
-      Reimbursement_Needed__c,
-    } = Parent_CSB_Rebate__r ?? {};
-
-    /**
-     * NOTE: For submissions not in the BAP, each property of the bap object
-     * parameter will be null.
-     */
-    return fetchFormioSubmission({
-      rebateYear,
-      formType,
-      mongoId: CSB_Form_ID__c || mongoId,
-      bap: {
-        modified: CSB_Modified_Full_String__c || null, // ISO 8601 date time string
-        comboKey: UEI_EFTI_Combo_Key__c || null, // UEI + EFTI combo key
-        mongoId: CSB_Form_ID__c || null, // MongoDB Object ID
-        rebateId: Parent_Rebate_ID__c || null, // CSB Rebate ID (6 digits)
-        reviewItemId: CSB_Review_Item_ID__c || null, // CSB Rebate ID with form/version ID (9 digits)
-        status:
-          (Record_Type_Name__c?.startsWith("CSB Funding Request")
-            ? CSB_Funding_Request_Status__c
-            : Record_Type_Name__c?.startsWith("CSB Payment Request")
-              ? CSB_Payment_Request_Status__c
-              : Record_Type_Name__c?.startsWith("CSB Close Out Request")
-                ? CSB_Closeout_Request_Status__c
-                : "") || null,
-        reimbursementNeeded: Reimbursement_Needed__c || null,
-      },
+  /** NOTE: See previous note above setting of `result.formio` value */
+  if (!result.formio && result.bap) {
+    result.formio = await fetchFormioSubmissionData({
+      formioSubmissionUrl: `${formioFormUrl}/submission/${result.bap.mongoId}`,
+      id: "mongoId",
       req,
-      res,
     });
+  }
+
+  if (!result.formio && !result.bap) {
+    const errorStatus = 400;
+    const errorMessage = `Error getting ${rebateYear} ${formName} form submission '${rebateId | mongoId}'.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  const bapRebateId = result.bap?.rebateId;
+  const formioRebateId = result.formio?.data?.[rebateIdFieldName];
+
+  return res.json({
+    ...result,
+    rebateId: bapRebateId || formioRebateId || null,
   });
 });
 

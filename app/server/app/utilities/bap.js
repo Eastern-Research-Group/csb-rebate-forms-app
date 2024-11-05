@@ -514,13 +514,13 @@ async function queryForBapFormSubmissionData(
     },
     2023: {
       frf: "CSB_Funding_Request_2023",
-      prf: null, // TODO: "CSB_Payment_Request_2023"
-      crf: null, // TODO: "CSB_Closeout_Request_2023"
+      prf: "CSB_Payment_Request_2023",
+      crf: "CSB_Closeout_Request_2023",
     },
     2024: {
-      frf: null, // TODO: "CSB_Funding_Request_2024"
-      prf: null, // TODO: "CSB_Payment_Request_2024"
-      crf: null, // TODO: "CSB_Closeout_Request_2024"
+      frf: "CSB_Funding_Request_2024",
+      prf: "CSB_Payment_Request_2024",
+      crf: "CSB_Closeout_Request_2024",
     },
   };
 

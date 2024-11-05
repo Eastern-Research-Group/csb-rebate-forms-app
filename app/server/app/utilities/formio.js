@@ -85,7 +85,7 @@ function getRebateIdFieldName({ rebateYear }) {
     : rebateYear === "2023"
       ? "_bap_rebate_id"
       : rebateYear === "2024"
-        ? "" // TODO
+        ? "_bap_rebate_id"
         : "";
 }
 

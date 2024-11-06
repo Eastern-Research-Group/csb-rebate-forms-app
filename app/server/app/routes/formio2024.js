@@ -16,11 +16,11 @@ const {
   fetchFRFSubmission,
   updateFRFSubmission,
   //
-  // fetchPRFSubmissions,
-  // createPRFSubmission,
-  // fetchPRFSubmission,
-  // updatePRFSubmission,
-  // deletePRFSubmission,
+  fetchPRFSubmissions,
+  createPRFSubmission,
+  fetchPRFSubmission,
+  updatePRFSubmission,
+  deletePRFSubmission,
   //
   // fetchCRFSubmissions,
   // createCRFSubmission,
@@ -93,28 +93,28 @@ router.post(
 
 // --- get user's 2024 PRF submissions from Formio
 router.get("/prf-submissions", storeBapComboKeys, (req, res) => {
-  res.json([]); // TODO: replace with `fetchPRFSubmissions({ rebateYear, req, res })` when PRF is ready
+  fetchPRFSubmissions({ rebateYear, req, res });
 });
 
 // --- post a new 2024 PRF submission to Formio
-// router.post("/prf-submission", storeBapComboKeys, (req, res) => {
-//   createPRFSubmission({ rebateYear, req, res });
-// });
+router.post("/prf-submission", storeBapComboKeys, (req, res) => {
+  createPRFSubmission({ rebateYear, req, res });
+});
 
 // --- get an existing 2024 PRF's schema and submission data from Formio
-// router.get("/prf-submission/:rebateId", storeBapComboKeys, (req, res) => {
-//   fetchPRFSubmission({ rebateYear, req, res });
-// });
+router.get("/prf-submission/:rebateId", storeBapComboKeys, (req, res) => {
+  fetchPRFSubmission({ rebateYear, req, res });
+});
 
 // --- post an update to an existing draft 2024 PRF submission to Formio
-// router.post("/prf-submission/:rebateId", storeBapComboKeys, (req, res) => {
-//   updatePRFSubmission({ rebateYear, req, res });
-// });
+router.post("/prf-submission/:rebateId", storeBapComboKeys, (req, res) => {
+  updatePRFSubmission({ rebateYear, req, res });
+});
 
 // --- delete an existing 2024 PRF submission from Formio
-// router.post("/delete-prf-submission", storeBapComboKeys, (req, res) => {
-//   deletePRFSubmission({ rebateYear, req, res });
-// });
+router.post("/delete-prf-submission", storeBapComboKeys, (req, res) => {
+  deletePRFSubmission({ rebateYear, req, res });
+});
 
 // --- get user's 2024 CRF submissions from Formio
 router.get("/crf-submissions", storeBapComboKeys, (req, res) => {

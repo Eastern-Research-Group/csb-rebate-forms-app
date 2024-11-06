@@ -233,6 +233,113 @@ const { submissionPeriodOpen } = require("../config/formio");
  */
 
 /**
+ * @typedef {Object} BapDataFor2024PRF
+ * @property {{
+ *  attributes: { type: "Order_Request__c", url: string }
+ *  Id: string
+ *  CSB_Snapshot__r: {
+ *    attributes: { type: "Data_Staging__c", url: string }
+ *    Id: string
+ *    JSON_Snapshot__c: string
+ *  }
+ *  Applicant_Organization__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
+ *    County__c: string
+ *  }
+ *  Primary_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
+ *    FirstName: string
+ *    LastName: string
+ *    Title: string
+ *    Email: string
+ *    Phone: string
+ *  } | null
+ *  Alternate_Applicant__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
+ *    FirstName: string
+ *    LastName: string
+ *    Title: string
+ *    Email: string
+ *    Phone: string
+ *  } | null
+ *  CSB_School_District__r: {
+ *    attributes: { type: "Account", url: string }
+ *    Id: string
+ *    Name: string
+ *    BillingStreet: string
+ *    BillingCity: string
+ *    BillingState: string
+ *    BillingPostalCode: string
+ *  } | null
+ *  School_District_Contact__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
+ *    FirstName: string
+ *    LastName: string
+ *    Title: string
+ *    Email: string
+ *    Phone: string
+ *  } | null
+ *  CSB_NCES_ID__c: string
+ *  Org_District_Prioritized__c: string
+ *  Self_Certification_Category__c: string
+ *  Prioritized_as_High_Need__c: boolean
+ *  Prioritized_as_Tribal__c: boolean
+ *  Prioritized_as_Rural__c: boolean
+ * }[]} frf2024RecordQuery
+ * @property {{
+ *  attributes: { type: "Line_Item__c", url: string }
+ *  Id: string
+ *  Rebate_Item_num__c: number
+ *  CSB_VIN__c: string
+ *  CSB_Fuel_Type__c: string
+ *  CSB_GVWR__c: number
+ *  Old_Bus_Odometer_miles__c: number
+ *  Old_Bus_NCES_District_ID__c: string
+ *  CSB_Model__c: string
+ *  CSB_Model_Year__c: string
+ *  CSB_Manufacturer__c: string
+ *  CSB_Manufacturer_if_Other__c: string | null
+ *  CSB_Annual_Fuel_Consumption__c: number
+ *  Annual_Mileage__c: number
+ *  Old_Bus_Estimated_Remaining_Life__c: number
+ *  Old_Bus_Annual_Idling_Hours__c: number
+ *  New_Bus_Infra_Rebate_Requested__c: number
+ *  New_Bus_Fuel_Type__c: string
+ *  New_Bus_GVWR__c: number
+ *  New_Bus_ADA_Compliant__c: boolean
+ * }[]} frf2024BusRecordsQuery
+ * @property {{
+ *  attributes: { type: "Line_Item__c", url: string }
+ *  Id: string
+ *  Related_Line_Item__c: string
+ *  Relationship_Type__c: 'Old Bus Private Fleet Owner (if changed)' | 'New Bus Owner'
+ *  Contact__r: {
+ *    attributes: { type: "Contact", url: string }
+ *    Id: string
+ *    FirstName: string
+ *    LastName: string
+ *    Title: string
+ *    Email: string
+ *    Phone: string
+ *    Account: {
+ *      attributes: { type: "Account", url: string }
+ *      Id: string
+ *      Name: string
+ *      BillingStreet: string
+ *      BillingCity: string
+ *      BillingState: string
+ *      BillingPostalCode: string
+ *      County__c: string | null
+ *    }
+ *  }
+ * }[]} frf2024BusRecordsContactsQueries
+ */
+
+/**
  * @typedef {Object} BapDataForFor2022CRF
  * @property {{
  *  attributes: { type: "Order_Request__c", url: string }
@@ -1181,6 +1288,298 @@ async function queryBapFor2023PRFData(req, frfReviewItemId) {
 }
 
 /**
+ * Uses cached JSforce connection to query the BAP for 2024 FRF submission data,
+ * for use in a brand new 2024 PRF submission.
+ *
+ * @param {express.Request} req
+ * @param {string} frfReviewItemId CSB Rebate ID with the form/version ID (9 digits)
+ * @returns {Promise<BapDataFor2024PRF>} 2024 FRF submission fields
+ */
+async function queryBapFor2024PRFData(req, frfReviewItemId) {
+  const logMessage =
+    `Querying the BAP for 2024 FRF submission associated with ` +
+    `FRF Review Item ID: '${frfReviewItemId}'.`;
+  log({ level: "info", message: logMessage, req });
+
+  /** @type {{ bapConnection: jsforce.Connection }} */
+  const { bapConnection } = req.app.locals;
+
+  // `SELECT
+  //   Id
+  // FROM
+  //   RecordType
+  // WHERE
+  //   DeveloperName = 'CSB_Funding_Request_2024' AND
+  //   SObjectType = 'Order_Request__c'
+  // LIMIT 1`
+
+  const frf2024RecordTypeIdQuery = await bapConnection
+    .sobject("RecordType")
+    .find(
+      {
+        DeveloperName: "CSB_Funding_Request_2024",
+        SObjectType: "Order_Request__c",
+      },
+      {
+        // "*": 1,
+        Id: 1, // Salesforce record ID
+      },
+    )
+    .limit(1)
+    .execute(async (err, records) => ((await err) ? err : records));
+
+  const frf2024RecordTypeId = frf2024RecordTypeIdQuery["0"].Id;
+
+  // `SELECT
+  //   Id,
+  //   CSB_Snapshot__r.Id,
+  //   CSB_Snapshot__r.JSON_Snapshot__c
+  //   Applicant_Organization__r.Id
+  //   Applicant_Organization__r.County__c
+  //   Primary_Applicant__r.Id,
+  //   Primary_Applicant__r.FirstName,
+  //   Primary_Applicant__r.LastName,
+  //   Primary_Applicant__r.Title,
+  //   Primary_Applicant__r.Email,
+  //   Primary_Applicant__r.Phone,
+  //   Alternate_Applicant__r.Id,
+  //   Alternate_Applicant__r.FirstName,
+  //   Alternate_Applicant__r.LastName,
+  //   Alternate_Applicant__r.Title,
+  //   Alternate_Applicant__r.Email,
+  //   Alternate_Applicant__r.Phone,
+  //   CSB_School_District__r.Id,
+  //   CSB_School_District__r.Name,
+  //   CSB_School_District__r.BillingStreet,
+  //   CSB_School_District__r.BillingCity,
+  //   CSB_School_District__r.BillingState,
+  //   CSB_School_District__r.BillingPostalCode,
+  //   School_District_Contact__r.Id,
+  //   School_District_Contact__r.FirstName,
+  //   School_District_Contact__r.LastName,
+  //   School_District_Contact__r.Title,
+  //   School_District_Contact__r.Email,
+  //   School_District_Contact__r.Phone,
+  //   CSB_NCES_ID__c,
+  //   Org_District_Prioritized__c,
+  //   Self_Certification_Category__c,
+  //   Prioritized_as_High_Need__c,
+  //   Prioritized_as_Tribal__c,
+  //   Prioritized_as_Rural__c
+  // FROM
+  //   Order_Request__c
+  // WHERE
+  //   RecordTypeId = '${frf2024RecordTypeId}' AND
+  //   CSB_Review_Item_ID__c = '${frfReviewItemId}' AND
+  //   Latest_Version__c = TRUE`
+
+  const frf2024RecordQuery = await bapConnection
+    .sobject("Order_Request__c")
+    .find(
+      {
+        RecordTypeId: frf2024RecordTypeId,
+        CSB_Review_Item_ID__c: frfReviewItemId,
+        Latest_Version__c: true,
+      },
+      {
+        // "*": 1,
+        Id: 1, // Salesforce record ID
+        "CSB_Snapshot__r.Id": 1,
+        "CSB_Snapshot__r.JSON_Snapshot__c": 1,
+        "Applicant_Organization__r.Id": 1,
+        "Applicant_Organization__r.County__c": 1,
+        "Primary_Applicant__r.Id": 1,
+        "Primary_Applicant__r.FirstName": 1,
+        "Primary_Applicant__r.LastName": 1,
+        "Primary_Applicant__r.Title": 1,
+        "Primary_Applicant__r.Email": 1,
+        "Primary_Applicant__r.Phone": 1,
+        "Alternate_Applicant__r.Id": 1,
+        "Alternate_Applicant__r.FirstName": 1,
+        "Alternate_Applicant__r.LastName": 1,
+        "Alternate_Applicant__r.Title": 1,
+        "Alternate_Applicant__r.Email": 1,
+        "Alternate_Applicant__r.Phone": 1,
+        "CSB_School_District__r.Id": 1,
+        "CSB_School_District__r.Name": 1,
+        "CSB_School_District__r.BillingStreet": 1,
+        "CSB_School_District__r.BillingCity": 1,
+        "CSB_School_District__r.BillingState": 1,
+        "CSB_School_District__r.BillingPostalCode": 1,
+        "School_District_Contact__r.Id": 1,
+        "School_District_Contact__r.FirstName": 1,
+        "School_District_Contact__r.LastName": 1,
+        "School_District_Contact__r.Title": 1,
+        "School_District_Contact__r.Email": 1,
+        "School_District_Contact__r.Phone": 1,
+        CSB_NCES_ID__c: 1,
+        Org_District_Prioritized__c: 1,
+        Self_Certification_Category__c: 1,
+        Prioritized_as_High_Need__c: 1,
+        Prioritized_as_Tribal__c: 1,
+        Prioritized_as_Rural__c: 1,
+      },
+    )
+    .execute(async (err, records) => ((await err) ? err : records));
+
+  const frf2024RecordId = frf2024RecordQuery["0"].Id;
+
+  // `SELECT
+  //   Id
+  // FROM
+  //   RecordType
+  // WHERE
+  //   DeveloperName = 'CSB_Rebate_Item' AND
+  //   SObjectType = 'Line_Item__c'
+  // LIMIT 1`
+
+  const rebateItemRecordTypeIdQuery = await bapConnection
+    .sobject("RecordType")
+    .find(
+      {
+        DeveloperName: "CSB_Rebate_Item",
+        SObjectType: "Line_Item__c",
+      },
+      {
+        // "*": 1,
+        Id: 1, // Salesforce record ID
+      },
+    )
+    .limit(1)
+    .execute(async (err, records) => ((await err) ? err : records));
+
+  const rebateItemRecordTypeId = rebateItemRecordTypeIdQuery["0"].Id;
+
+  // `SELECT
+  //   Id,
+  //   Rebate_Item_num__c,
+  //   CSB_VIN__c,
+  //   CSB_Fuel_Type__c,
+  //   CSB_GVWR__c,
+  //   Old_Bus_Odometer_miles__c,
+  //   Old_Bus_NCES_District_ID__c,
+  //   CSB_Model__c,
+  //   CSB_Model_Year__c,
+  //   CSB_Manufacturer__c,
+  //   CSB_Manufacturer_if_Other__c,
+  //   CSB_Annual_Fuel_Consumption__c,
+  //   Annual_Mileage__c,
+  //   Old_Bus_Estimated_Remaining_Life__c,
+  //   Old_Bus_Annual_Idling_Hours__c,
+  //   New_Bus_Infra_Rebate_Requested__c,
+  //   New_Bus_Fuel_Type__c,
+  //   New_Bus_GVWR__c,
+  //   New_Bus_ADA_Compliant__c
+  // FROM
+  //   Line_Item__c
+  // WHERE
+  //   RecordTypeId = '${rebateItemRecordTypeId}' AND
+  //   Related_Order_Request__c = '${frf2024RecordId}' AND
+  //   CSB_Rebate_Item_Type__c = 'Old Bus'`
+
+  const frf2024BusRecordsQuery = await bapConnection
+    .sobject("Line_Item__c")
+    .find(
+      {
+        RecordTypeId: rebateItemRecordTypeId,
+        Related_Order_Request__c: frf2024RecordId,
+        CSB_Rebate_Item_Type__c: "Old Bus",
+      },
+      {
+        // "*": 1,
+        Id: 1, // Salesforce record ID
+        Rebate_Item_num__c: 1,
+        CSB_VIN__c: 1,
+        CSB_Fuel_Type__c: 1,
+        CSB_GVWR__c: 1,
+        Old_Bus_Odometer_miles__c: 1,
+        Old_Bus_NCES_District_ID__c: 1,
+        CSB_Model__c: 1,
+        CSB_Model_Year__c: 1,
+        CSB_Manufacturer__c: 1,
+        CSB_Manufacturer_if_Other__c: 1,
+        CSB_Annual_Fuel_Consumption__c: 1,
+        Annual_Mileage__c: 1,
+        Old_Bus_Estimated_Remaining_Life__c: 1,
+        Old_Bus_Annual_Idling_Hours__c: 1,
+        New_Bus_Infra_Rebate_Requested__c: 1,
+        New_Bus_Fuel_Type__c: 1,
+        New_Bus_GVWR__c: 1,
+        New_Bus_ADA_Compliant__c: 1,
+      },
+    )
+    .execute(async (err, records) => ((await err) ? err : records));
+
+  const frf2024BusRecordsContactsQueries = (
+    await Promise.all(
+      frf2024BusRecordsQuery.map(async (frf2024BusRecord) => {
+        const frf2024BusRecordId = frf2024BusRecord.Id;
+
+        // `SELECT
+        //   Id,
+        //   Related_Line_Item__c,
+        //   Relationship_Type__c,
+        //   Contact__r.Id,
+        //   Contact__r.FirstName,
+        //   Contact__r.LastName
+        //   Contact__r.Title,
+        //   Contact__r.Email,
+        //   Contact__r.Phone,
+        //   Contact__r.Account.Id,
+        //   Contact__r.Account.Name,
+        //   Contact__r.Account.BillingStreet,
+        //   Contact__r.Account.BillingCity,
+        //   Contact__r.Account.BillingState,
+        //   Contact__r.Account.BillingPostalCode,
+        //   Contact__r.Account.County__c,
+        // FROM
+        //   Line_Item__c
+        // WHERE
+        //   RecordTypeId = '${rebateItemRecordTypeId}' AND
+        //   Related_Line_Item__c = '${frf2024BusRecordId}' AND
+        //   CSB_Rebate_Item_Type__c = 'COF Relationship'`
+
+        return await bapConnection
+          .sobject("Line_Item__c")
+          .find(
+            {
+              RecordTypeId: rebateItemRecordTypeId,
+              Related_Line_Item__c: frf2024BusRecordId,
+              CSB_Rebate_Item_Type__c: "COF Relationship",
+            },
+            {
+              // "*": 1,
+              Id: 1, // Salesforce record ID
+              Related_Line_Item__c: 1,
+              Relationship_Type__c: 1,
+              "Contact__r.Id": 1,
+              "Contact__r.FirstName": 1,
+              "Contact__r.LastName": 1,
+              "Contact__r.Title": 1,
+              "Contact__r.Email": 1,
+              "Contact__r.Phone": 1,
+              "Contact__r.Account.Id": 1,
+              "Contact__r.Account.Name": 1,
+              "Contact__r.Account.BillingStreet": 1,
+              "Contact__r.Account.BillingCity": 1,
+              "Contact__r.Account.BillingState": 1,
+              "Contact__r.Account.BillingPostalCode": 1,
+              "Contact__r.Account.County__c": 1,
+            },
+          )
+          .execute(async (err, records) => ((await err) ? err : records));
+      }),
+    )
+  ).flat();
+
+  return {
+    frf2024RecordQuery,
+    frf2024BusRecordsQuery,
+    frf2024BusRecordsContactsQueries,
+  };
+}
+
+/**
  * Uses cached JSforce connection to query the BAP for 2022 FRF submission data
  * and 2022 PRF submission data, for use in a brand new 2022 CRF submission.
  *
@@ -1629,6 +2028,20 @@ function getBapDataFor2023PRF(req, frfReviewItemId) {
 }
 
 /**
+ * Fetches 2024 FRF submission data associated with a FRF Review Item ID.
+ *
+ * @param {express.Request} req
+ * @param {string} frfReviewItemId
+ * @returns {ReturnType<queryBapFor2024PRFData>}
+ */
+function getBapDataFor2024PRF(req, frfReviewItemId) {
+  return verifyBapConnection(req, {
+    name: queryBapFor2024PRFData,
+    args: [req, frfReviewItemId],
+  });
+}
+
+/**
  * Fetches 2022 FRF submission data and 2022 PRF submission data associated with
  * a FRF Review Item ID and a PRF Review Item ID.
  *
@@ -1708,6 +2121,7 @@ module.exports = {
   getBapFormSubmissionsStatuses,
   getBapDataFor2022PRF,
   getBapDataFor2023PRF,
+  getBapDataFor2024PRF,
   getBapDataFor2022CRF,
   checkForBapDuplicates,
   checkFormSubmissionPeriodAndBapStatus,

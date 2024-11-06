@@ -15,6 +15,7 @@ const {
   getBapFormSubmissionsStatuses,
   getBapDataFor2022PRF,
   getBapDataFor2023PRF,
+  getBapDataFor2024PRF,
   getBapDataFor2022CRF,
   checkFormSubmissionPeriodAndBapStatus,
 } = require("../utilities/bap");
@@ -327,7 +328,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               array.push({
                 org_number: jsonOrg.org_number,
                 org_type: jsonOrg.org_type,
-                // _org_typeCombined: "", // NOTE: 'Existing Bus Owner, New Bus Owner'
                 _org_id: orgId,
                 org_name: orgName,
                 _org_contact_id: contactId,
@@ -340,10 +340,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 org_address_2: orgStreetAddress2,
                 org_county: County__c,
                 org_city: BillingCity,
-                org_state: {
-                  name: BillingState,
-                  // abbreviation: "",
-                },
+                org_state: { name: BillingState },
                 org_zip: BillingPostalCode,
               });
             }
@@ -499,7 +496,250 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
   }
 
   if (rebateYear === "2024") {
-    // TODO
+    return getBapDataFor2024PRF(req, frfReviewItemId)
+      .then((results) => {
+        const {
+          frf2024RecordQuery,
+          frf2024BusRecordsQuery,
+          frf2024BusRecordsContactsQueries,
+        } = results;
+
+        const existingBusOwnerType = "Old Bus Private Fleet Owner (if changed)";
+        const newBusOwnerType = "New Bus Owner";
+
+        const {
+          CSB_Snapshot__r,
+          Applicant_Organization__r,
+          Primary_Applicant__r,
+          Alternate_Applicant__r,
+          CSB_School_District__r,
+          School_District_Contact__r,
+          CSB_NCES_ID__c,
+          Org_District_Prioritized__c,
+          Self_Certification_Category__c,
+          Prioritized_as_High_Need__c,
+          Prioritized_as_Tribal__c,
+          Prioritized_as_Rural__c,
+        } = frf2024RecordQuery[0];
+
+        const frf2024RecordJson = JSON.parse(CSB_Snapshot__r.JSON_Snapshot__c);
+
+        const [schoolDistrictStreetAddress1, schoolDistrictStreetAddress2] = (
+          CSB_School_District__r?.BillingStreet ?? "\n"
+        ).split("\n");
+
+        const org_organizations = frf2024BusRecordsContactsQueries.reduce(
+          (array, frf2024BusRecordsContact) => {
+            const { Contact__r } = frf2024BusRecordsContact;
+
+            const {
+              Id: contactId,
+              FirstName,
+              LastName,
+              Title,
+              Email,
+              Phone,
+              Account,
+            } = Contact__r;
+
+            const {
+              Id: orgId,
+              Name: orgName,
+              BillingStreet,
+              BillingCity,
+              BillingState,
+              BillingPostalCode,
+              County__c,
+            } = Account || {};
+
+            const jsonOrg = frf2024RecordJson.data.organizations.find((org) => {
+              const matchedName = org?.org_orgName?.trim() === orgName?.trim();
+              const matchedEmail =
+                org.org_contactEmail?.trim()?.toLowerCase() ===
+                Email?.trim()?.toLowerCase();
+
+              return matchedName && matchedEmail;
+            });
+
+            const orgAlreadyAdded = array.some((org) => org._org_id === orgId);
+
+            /**
+             * Ensure the org exists in the 2024 FRF submission's
+             * "organizations" array, and it hasn't already been added.
+             */
+            if (jsonOrg && !orgAlreadyAdded) {
+              const [orgStreetAddress1, orgStreetAddress2] = (
+                BillingStreet ?? "\n"
+              ).split("\n");
+
+              array.push({
+                org_number: jsonOrg.org_number,
+                org_type: jsonOrg.org_type,
+                _org_id: orgId,
+                org_name: orgName,
+                _org_contact_id: contactId,
+                org_contact_fname: FirstName,
+                org_contact_lname: LastName,
+                org_contact_title: Title,
+                org_contact_email: Email,
+                org_contact_phone: Phone,
+                org_address_1: orgStreetAddress1,
+                org_address_2: orgStreetAddress2,
+                org_county: County__c,
+                org_city: BillingCity,
+                org_state: { name: BillingState },
+                org_zip: BillingPostalCode,
+              });
+            }
+
+            return array;
+          },
+          [],
+        );
+
+        const bus_buses = frf2024BusRecordsQuery.map((frf2024BusRecord) => {
+          const {
+            Id: busRecordId,
+            Rebate_Item_num__c,
+            CSB_VIN__c,
+            CSB_Fuel_Type__c,
+            CSB_GVWR__c,
+            Old_Bus_Odometer_miles__c,
+            Old_Bus_NCES_District_ID__c,
+            CSB_Model__c,
+            CSB_Model_Year__c,
+            CSB_Manufacturer__c,
+            CSB_Manufacturer_if_Other__c,
+            CSB_Annual_Fuel_Consumption__c,
+            Annual_Mileage__c,
+            Old_Bus_Estimated_Remaining_Life__c,
+            Old_Bus_Annual_Idling_Hours__c,
+            New_Bus_Infra_Rebate_Requested__c,
+            New_Bus_Fuel_Type__c,
+            New_Bus_GVWR__c,
+            New_Bus_ADA_Compliant__c,
+          } = frf2024BusRecord;
+
+          const existingOwnerRecord = frf2024BusRecordsContactsQueries.find(
+            (item) =>
+              item.Related_Line_Item__c === busRecordId &&
+              item.Relationship_Type__c === existingBusOwnerType,
+          );
+
+          const newOwnerRecord = frf2024BusRecordsContactsQueries.find(
+            (item) =>
+              item.Related_Line_Item__c === busRecordId &&
+              item.Relationship_Type__c === newBusOwnerType,
+          );
+
+          return {
+            bus_busNumber: Rebate_Item_num__c,
+            bus_existingOwner: {
+              org_id: existingOwnerRecord?.Contact__r?.Account?.Id,
+              org_name: existingOwnerRecord?.Contact__r?.Account?.Name,
+              org_contact_id: existingOwnerRecord?.Contact__r?.Id,
+              org_contact_fname: existingOwnerRecord?.Contact__r?.FirstName,
+              org_contact_lname: existingOwnerRecord?.Contact__r?.LastName,
+            },
+            bus_existingVin: CSB_VIN__c,
+            bus_existingFuelType: CSB_Fuel_Type__c,
+            bus_existingGvwr: CSB_GVWR__c,
+            bus_existingOdometer: Old_Bus_Odometer_miles__c,
+            bus_existingModel: CSB_Model__c,
+            bus_existingModelYear: CSB_Model_Year__c,
+            bus_existingNcesId: Old_Bus_NCES_District_ID__c,
+            bus_existingManufacturer: CSB_Manufacturer__c,
+            bus_existingManufacturerOther: CSB_Manufacturer_if_Other__c,
+            bus_existingAnnualFuelConsumption: CSB_Annual_Fuel_Consumption__c,
+            bus_existingAnnualMileage: Annual_Mileage__c,
+            bus_existingRemainingLife: Old_Bus_Estimated_Remaining_Life__c,
+            bus_existingIdlingHours: Old_Bus_Annual_Idling_Hours__c,
+            bus_newOwner: {
+              org_id: newOwnerRecord?.Contact__r?.Account?.Id,
+              org_name: newOwnerRecord?.Contact__r?.Account?.Name,
+              org_contact_id: newOwnerRecord?.Contact__r?.Id,
+              org_contact_fname: newOwnerRecord?.Contact__r?.FirstName,
+              org_contact_lname: newOwnerRecord?.Contact__r?.LastName,
+            },
+            bus_newFuelType: New_Bus_Fuel_Type__c,
+            bus_newGvwr: New_Bus_GVWR__c,
+            _bus_maxRebate: New_Bus_Infra_Rebate_Requested__c,
+            _bus_newADAfromFRF: New_Bus_ADA_Compliant__c,
+          };
+        });
+
+        return {
+          data: {
+            _application_form_modified: frfModified,
+            _bap_entity_combo_key: comboKey,
+            _bap_rebate_id: rebateId,
+            _user_email: email,
+            _user_title: title,
+            _user_name: name,
+            _bap_applicant_email: email,
+            _bap_applicant_title: title,
+            _bap_applicant_name: name,
+            _bap_applicant_efti: ENTITY_EFT_INDICATOR__c || "0000",
+            _bap_applicant_uei: UNIQUE_ENTITY_ID__c,
+            _bap_applicant_organization_id: Applicant_Organization__r?.Id,
+            _bap_applicant_organization_name: LEGAL_BUSINESS_NAME__c,
+            _bap_applicant_street_address_1: PHYSICAL_ADDRESS_LINE_1__c,
+            _bap_applicant_street_address_2: PHYSICAL_ADDRESS_LINE_2__c,
+            _bap_applicant_county: Applicant_Organization__r?.County__c,
+            _bap_applicant_city: PHYSICAL_ADDRESS_CITY__c,
+            _bap_applicant_state: PHYSICAL_ADDRESS_PROVINCE_OR_STATE__c,
+            _bap_applicant_zip: PHYSICAL_ADDRESS_ZIPPOSTAL_CODE__c,
+            _bap_elec_bus_poc_email: ELEC_BUS_POC_EMAIL__c,
+            _bap_alt_elec_bus_poc_email: ALT_ELEC_BUS_POC_EMAIL__c,
+            _bap_govt_bus_poc_email: GOVT_BUS_POC_EMAIL__c,
+            _bap_alt_govt_bus_poc_email: ALT_GOVT_BUS_POC_EMAIL__c,
+            _bap_primary_id: Primary_Applicant__r?.Id,
+            _bap_primary_fname: Primary_Applicant__r?.FirstName,
+            _bap_primary_lname: Primary_Applicant__r?.LastName,
+            _bap_primary_title: Primary_Applicant__r?.Title,
+            _bap_primary_email: Primary_Applicant__r?.Email,
+            _bap_primary_phone: Primary_Applicant__r?.Phone,
+            _bap_alternate_id: Alternate_Applicant__r?.Id,
+            _bap_alternate_fname: Alternate_Applicant__r?.FirstName,
+            _bap_alternate_lname: Alternate_Applicant__r?.LastName,
+            _bap_alternate_title: Alternate_Applicant__r?.Title,
+            _bap_alternate_email: Alternate_Applicant__r?.Email,
+            _bap_alternate_phone: Alternate_Applicant__r?.Phone,
+            _bap_district_id: CSB_School_District__r?.Id,
+            _bap_district_nces_id: CSB_NCES_ID__c,
+            _bap_district_name: CSB_School_District__r?.Name,
+            _bap_district_address_1: schoolDistrictStreetAddress1 || "",
+            _bap_district_address_2: schoolDistrictStreetAddress2 || "",
+            _bap_district_city: CSB_School_District__r?.BillingCity,
+            _bap_district_state: CSB_School_District__r?.BillingState,
+            _bap_district_zip: CSB_School_District__r?.BillingPostalCode,
+            _bap_district_priority: Org_District_Prioritized__c,
+            _bap_district_priority_reason: {
+              highNeed: Prioritized_as_High_Need__c,
+              tribal: Prioritized_as_Tribal__c,
+              rural: Prioritized_as_Rural__c,
+            },
+            _bap_district_self_certify: Self_Certification_Category__c,
+            _bap_district_contact_id: School_District_Contact__r?.Id,
+            _bap_district_contact_fname: School_District_Contact__r?.FirstName,
+            _bap_district_contact_lname: School_District_Contact__r?.LastName,
+            _bap_district_contact_title: School_District_Contact__r?.Title,
+            _bap_district_contact_email: School_District_Contact__r?.Email,
+            _bap_district_contact_phone: School_District_Contact__r?.Phone,
+            org_organizations,
+            bus_buses,
+          },
+          /** Add custom metadata to track formio submissions from wrapper. */
+          metadata: { ...formioCSBMetadata },
+          state: "draft",
+        };
+      })
+      .catch((_error) => {
+        // NOTE: logged in bap verifyBapConnection
+        const errorStatus = 500;
+        const errorMessage = `Error getting data for a new 2024 Payment Request form submission from the BAP.`;
+        return res.status(errorStatus).json({ message: errorMessage });
+      });
   }
 }
 

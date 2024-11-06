@@ -196,13 +196,12 @@ function FRF2022Submission(props: { rebate: Rebate2022 }) {
   });
 
   const frfBapInternalStatus = frf.bap?.status || "";
+  const frfBapStatus = bapStatusMap["2022"].frf.get(frfBapInternalStatus);
   const frfFormioStatus = formioStatusMap.get(frf.formio.state);
 
   const frfStatus = frfNeedsEdits
     ? "Edits Requested"
-    : bapStatusMap["2022"].frf.get(frfBapInternalStatus) ||
-      frfFormioStatus ||
-      "";
+    : frfBapStatus || frfFormioStatus || "";
 
   const frfSelected = frfStatus === "Selected";
   const frfSelectedButNoPRF = frfSelected && !Boolean(prf.formio);
@@ -512,13 +511,12 @@ function PRF2022Submission(props: { rebate: Rebate2022 }) {
   });
 
   const prfBapInternalStatus = prf.bap?.status || "";
+  const prfBapStatus = bapStatusMap["2022"].prf.get(prfBapInternalStatus);
   const prfFormioStatus = formioStatusMap.get(prf.formio.state);
 
   const prfStatus = prfNeedsEdits
     ? "Edits Requested"
-    : bapStatusMap["2022"].prf.get(prfBapInternalStatus) ||
-      prfFormioStatus ||
-      "";
+    : prfBapStatus || prfFormioStatus || "";
 
   const prfApproved = prfStatus === "Funding Approved";
   const prfApprovedButNoCRF = prfApproved && !Boolean(crf.formio);
@@ -716,6 +714,7 @@ function CRF2022Submission(props: { rebate: Rebate2022 }) {
   });
 
   const crfBapInternalStatus = crf.bap?.status || "";
+  const crfBapStatus = bapStatusMap["2022"].crf.get(crfBapInternalStatus);
   const crfFormioStatus = formioStatusMap.get(crf.formio.state);
   const crfBapReimbursementNeeded = crf.bap?.reimbursementNeeded || false;
 
@@ -728,9 +727,7 @@ function CRF2022Submission(props: { rebate: Rebate2022 }) {
     ? "Edits Requested"
     : crfNeedsReimbursement
       ? "Reimbursement Needed"
-      : bapStatusMap["2022"].crf.get(crfBapInternalStatus) ||
-        crfFormioStatus ||
-        "";
+      : crfBapStatus || crfFormioStatus || "";
 
   const crfApproved = crfStatus === "Close Out Approved";
 
@@ -1060,13 +1057,12 @@ function FRF2023Submission(props: { rebate: Rebate2023 }) {
   });
 
   const frfBapInternalStatus = frf.bap?.status || "";
+  const frfBapStatus = bapStatusMap["2023"].frf.get(frfBapInternalStatus);
   const frfFormioStatus = formioStatusMap.get(frf.formio.state);
 
   const frfStatus = frfNeedsEdits
     ? "Edits Requested"
-    : bapStatusMap["2023"].frf.get(frfBapInternalStatus) ||
-      frfFormioStatus ||
-      "";
+    : frfBapStatus || frfFormioStatus || "";
 
   const frfSelected = frfStatus === "Selected";
   const frfSelectedButNoPRF = frfSelected && !Boolean(prf.formio);
@@ -1366,13 +1362,12 @@ function PRF2023Submission(props: { rebate: Rebate2023 }) {
   });
 
   const prfBapInternalStatus = prf.bap?.status || "";
+  const prfBapStatus = bapStatusMap["2023"].prf.get(prfBapInternalStatus);
   const prfFormioStatus = formioStatusMap.get(prf.formio.state);
 
   const prfStatus = prfNeedsEdits
     ? "Edits Requested"
-    : bapStatusMap["2023"].prf.get(prfBapInternalStatus) ||
-      prfFormioStatus ||
-      "";
+    : prfBapStatus || prfFormioStatus || "";
 
   const prfApproved = prfStatus === "Funding Approved";
   const prfApprovedButNoCRF = prfApproved && !Boolean(crf.formio);
@@ -1727,13 +1722,12 @@ function FRF2024Submission(props: { rebate: Rebate2024 }) {
   });
 
   const frfBapInternalStatus = frf.bap?.status || "";
+  const frfBapStatus = bapStatusMap["2024"].frf.get(frfBapInternalStatus);
   const frfFormioStatus = formioStatusMap.get(frf.formio.state);
 
   const frfStatus = frfNeedsEdits
     ? "Edits Requested"
-    : bapStatusMap["2024"].frf.get(frfBapInternalStatus) ||
-      frfFormioStatus ||
-      "";
+    : frfBapStatus || frfFormioStatus || "";
 
   const frfSelected = frfStatus === "Selected";
   const frfSelectedButNoPRF = frfSelected && !Boolean(prf.formio);

@@ -340,7 +340,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  */
 
 /**
- * @typedef {Object} BapDataForFor2022CRF
+ * @typedef {Object} BapDataFor2022CRF
  * @property {{
  *  attributes: { type: "Order_Request__c", url: string }
  *  Id: string
@@ -398,8 +398,8 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Total_Bus_And_Infrastructure_Rebate__c: number
  *  Total_Infrastructure_Funds__c: number | null
  *  Num_Of_Buses_Requested_From_Application__c: number
- *  Total_Price_All_Buses__c: string
- *  Total_Bus_Rebate_Amount__c: string
+ *  Total_Price_All_Buses__c: number
+ *  Total_Bus_Rebate_Amount__c: number
  *  Total_All_Eligible_Infrastructure_Costs__c: number | null
  *  Total_Infrastructure_Rebate__c: number | null
  *  Total_Level_2_Charger_Costs__c: number | null
@@ -1586,7 +1586,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
  * @param {express.Request} req
  * @param {string} frfReviewItemId CSB Rebate ID with the form/version ID (9 digits)
  * @param {string} prfReviewItemId CSB Rebate ID with the form/version ID (9 digits)
- * @returns {Promise<BapDataForFor2022CRF>} 2022 FRF and 2022 PRF submission fields
+ * @returns {Promise<BapDataFor2022CRF>} 2022 FRF and 2022 PRF submission fields
  */
 async function queryBapFor2022CRFData(req, frfReviewItemId, prfReviewItemId) {
   const logMessage =

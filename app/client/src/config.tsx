@@ -121,7 +121,11 @@ export const bapStatusMap = {
       .set("Withdrawn", "Withdrawn")
       .set("Coordinator Denied", "Not Selected")
       .set("Accepted", "Selected"),
-    prf: new Map<string, string>(), // TODO
+    prf: new Map<string, string>()
+      .set("Needs Clarification", "Needs Clarification")
+      .set("Withdrawn", "Withdrawn")
+      .set("Coordinator Denied", "Funding Denied")
+      .set("Accepted", "Funding Approved"),
     crf: new Map<string, string>(), // TODO
   },
 };

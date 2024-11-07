@@ -90,7 +90,7 @@ router.post("/prf-submission", storeBapComboKeys, (req, res) => {
 });
 
 // --- get an existing 2022 PRF's schema and submission data from Formio
-router.get("/prf-submission/:rebateId", storeBapComboKeys, async (req, res) => {
+router.get("/prf-submission/:rebateId", storeBapComboKeys, (req, res) => {
   fetchPRFSubmission({ rebateYear, req, res });
 });
 
@@ -115,7 +115,7 @@ router.post("/crf-submission", storeBapComboKeys, (req, res) => {
 });
 
 // --- get an existing 2022 CRF's schema and submission data from Formio
-router.get("/crf-submission/:rebateId", storeBapComboKeys, async (req, res) => {
+router.get("/crf-submission/:rebateId", storeBapComboKeys, (req, res) => {
   fetchCRFSubmission({ rebateYear, req, res });
 });
 

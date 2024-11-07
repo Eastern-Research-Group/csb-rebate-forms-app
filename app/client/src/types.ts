@@ -489,7 +489,7 @@ type FormioFRF2024Data = {
 type FormioPRF2024Data = {
   [field: string]: unknown;
   // fields injected upon a new draft PRF submission creation:
-  _application_form_modified: string;
+  _frf_modified: string;
   _bap_entity_combo_key: string;
   _bap_rebate_id: string;
   _user_email: string;
@@ -546,60 +546,61 @@ type FormioPRF2024Data = {
   _bap_district_contact_email: string;
   _bap_district_contact_phone: string;
   org_organizations: {
+    _bap_org_frf: boolean;
     org_number: number;
     org_type: {
-      existingBusOwner: boolean;
-      newBusOwner: boolean;
-      privateFleet: boolean;
+      existing_bus_owner: boolean;
+      new_bus_owner: boolean;
+      private_fleet: boolean;
     };
-    _org_id: string;
-    org_name: string;
-    _org_contact_id: string;
-    org_contact_fname: string;
-    org_contact_lname: string;
-    org_contact_title: string;
-    org_contact_email: string;
-    org_contact_phone: string;
-    org_address_1: string;
-    org_address_2: string;
-    org_county: string;
-    org_city: string;
-    org_state: { name: string };
-    org_zip: string;
+    _bap_org_id: string;
+    _bap_org_name: string;
+    _bap_org_contact_id: string;
+    _bap_org_contact_fname: string;
+    _bap_org_contact_lname: string;
+    _bap_org_contact_title: string;
+    _bap_org_contact_email: string;
+    _bap_org_contact_phone: string;
+    _bap_org_address_1: string;
+    _bap_org_address_2: string;
+    _bap_org_county: string;
+    _bap_org_city: string;
+    _bap_org_state: { name: string };
+    _bap_org_zip: string;
   }[];
   bus_buses: {
-    bus_busNumber: number;
-    bus_existingOwner: {
+    bus_number: number;
+    bus_existing_owner: {
       org_id: string;
       org_name: string;
       org_contact_id: string;
       org_contact_fname: string;
       org_contact_lname: string;
     };
-    bus_existingVin: string;
-    bus_existingFuelType: string;
-    bus_existingGvwr: number;
-    bus_existingOdometer: number;
-    bus_existingModel: string;
-    bus_existingModelYear: string;
-    bus_existingNcesId: string;
-    bus_existingManufacturer: string;
-    bus_existingManufacturerOther: string | null;
-    bus_existingAnnualFuelConsumption: number;
-    bus_existingAnnualMileage: number;
-    bus_existingRemainingLife: number;
-    bus_existingIdlingHours: number;
-    bus_newOwner: {
+    bus_existing_vin: string;
+    bus_existing_fuel_type: string;
+    bus_existing_gvwr: number;
+    bus_existing_odometer: number;
+    bus_existing_model: string;
+    bus_existing_model_year: string;
+    bus_existing_nces_id: string;
+    bus_existing_manufacturer: string;
+    bus_existing_manufacturer_other: string | null;
+    bus_existing_annual_fuel_consumption: number;
+    bus_existing_annual_mileage: number;
+    bus_existing_remaining_life: number;
+    bus_existing_idling_hours: number;
+    bus_new_owner: {
       org_id: string;
       org_name: string;
       org_contact_id: string;
       org_contact_fname: string;
       org_contact_lname: string;
     };
-    bus_newFuelType: string;
-    bus_newGvwr: number;
-    _bus_maxRebate: number;
-    _bus_newADAfromFRF: boolean;
+    bus_new_fuel_type: string;
+    bus_new_gvwr: number;
+    _bus_new_max_rebate: number;
+    _bus_new_ada_from_frf: boolean;
   }[];
 };
 

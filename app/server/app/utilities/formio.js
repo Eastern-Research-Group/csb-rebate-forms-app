@@ -573,22 +573,27 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               ).split("\n");
 
               array.push({
+                _bap_org_frf: true,
                 org_number: jsonOrg.org_number,
-                org_type: jsonOrg.org_type,
-                _org_id: orgId,
-                org_name: orgName,
-                _org_contact_id: contactId,
-                org_contact_fname: FirstName,
-                org_contact_lname: LastName,
-                org_contact_title: Title,
-                org_contact_email: Email,
-                org_contact_phone: Phone,
-                org_address_1: orgStreetAddress1,
-                org_address_2: orgStreetAddress2,
-                org_county: County__c,
-                org_city: BillingCity,
-                org_state: { name: BillingState },
-                org_zip: BillingPostalCode,
+                org_type: {
+                  existing_bus_owner: jsonOrg.org_type.existingBusOwner,
+                  new_bus_owner: jsonOrg.org_type.newBusOwner,
+                  private_fleet: jsonOrg.org_type.privateFleet,
+                },
+                _bap_org_id: orgId,
+                _bap_org_name: orgName,
+                _bap_org_contact_id: contactId,
+                _bap_org_contact_fname: FirstName,
+                _bap_org_contact_lname: LastName,
+                _bap_org_contact_title: Title,
+                _bap_org_contact_email: Email,
+                _bap_org_contact_phone: Phone,
+                _bap_org_address_1: orgStreetAddress1,
+                _bap_org_address_2: orgStreetAddress2,
+                _bap_org_county: County__c,
+                _bap_org_city: BillingCity,
+                _bap_org_state: { name: BillingState },
+                _bap_org_zip: BillingPostalCode,
               });
             }
 
@@ -633,44 +638,44 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
           );
 
           return {
-            bus_busNumber: Rebate_Item_num__c,
-            bus_existingOwner: {
+            bus_number: Rebate_Item_num__c,
+            bus_existing_owner: {
               org_id: existingOwnerRecord?.Contact__r?.Account?.Id,
               org_name: existingOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: existingOwnerRecord?.Contact__r?.Id,
               org_contact_fname: existingOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: existingOwnerRecord?.Contact__r?.LastName,
             },
-            bus_existingVin: CSB_VIN__c,
-            bus_existingFuelType: CSB_Fuel_Type__c,
-            bus_existingGvwr: CSB_GVWR__c,
-            bus_existingOdometer: Old_Bus_Odometer_miles__c,
-            bus_existingModel: CSB_Model__c,
-            bus_existingModelYear: CSB_Model_Year__c,
-            bus_existingNcesId: Old_Bus_NCES_District_ID__c,
-            bus_existingManufacturer: CSB_Manufacturer__c,
-            bus_existingManufacturerOther: CSB_Manufacturer_if_Other__c,
-            bus_existingAnnualFuelConsumption: CSB_Annual_Fuel_Consumption__c,
-            bus_existingAnnualMileage: Annual_Mileage__c,
-            bus_existingRemainingLife: Old_Bus_Estimated_Remaining_Life__c,
-            bus_existingIdlingHours: Old_Bus_Annual_Idling_Hours__c,
-            bus_newOwner: {
+            bus_existing_vin: CSB_VIN__c,
+            bus_existing_fuel_type: CSB_Fuel_Type__c,
+            bus_existing_gvwr: CSB_GVWR__c,
+            bus_existing_odometer: Old_Bus_Odometer_miles__c,
+            bus_existing_model: CSB_Model__c,
+            bus_existing_model_year: CSB_Model_Year__c,
+            bus_existing_nces_id: Old_Bus_NCES_District_ID__c,
+            bus_existing_manufacturer: CSB_Manufacturer__c,
+            bus_existing_manufacturer_other: CSB_Manufacturer_if_Other__c,
+            bus_existing_annual_fuel_consumption: CSB_Annual_Fuel_Consumption__c, // prettier-ignore
+            bus_existing_annual_mileage: Annual_Mileage__c,
+            bus_existing_remaining_life: Old_Bus_Estimated_Remaining_Life__c,
+            bus_existing_idling_hours: Old_Bus_Annual_Idling_Hours__c,
+            bus_new_owner: {
               org_id: newOwnerRecord?.Contact__r?.Account?.Id,
               org_name: newOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: newOwnerRecord?.Contact__r?.Id,
               org_contact_fname: newOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: newOwnerRecord?.Contact__r?.LastName,
             },
-            bus_newFuelType: New_Bus_Fuel_Type__c,
-            bus_newGvwr: New_Bus_GVWR__c,
-            _bus_maxRebate: New_Bus_Infra_Rebate_Requested__c,
-            _bus_newADAfromFRF: New_Bus_ADA_Compliant__c,
+            bus_new_fuel_type: New_Bus_Fuel_Type__c,
+            bus_new_gvwr: New_Bus_GVWR__c,
+            _bus_new_max_rebate: New_Bus_Infra_Rebate_Requested__c,
+            _bus_new_ada_from_frf: New_Bus_ADA_Compliant__c,
           };
         });
 
         return {
           data: {
-            _application_form_modified: frfModified,
+            _frf_modified: frfModified,
             _bap_entity_combo_key: comboKey,
             _bap_rebate_id: rebateId,
             _user_email: email,

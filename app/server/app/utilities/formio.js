@@ -2127,6 +2127,7 @@ function fetchChangeRequest({ rebateYear, req, res }) {
 
 module.exports = {
   searchNcesData,
+  getRebateIdFieldName,
   //
   uploadS3FileMetadata,
   downloadS3FileMetadata,

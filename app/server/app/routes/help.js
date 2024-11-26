@@ -149,6 +149,31 @@ function fetchBapSubmissionData({
   });
 }
 
+// --- download Formio S3 file metadata
+router.get("/formio/s3/:rebateYear/:formType/storage/s3", (req, res) => {
+  const { query } = req;
+  const { rebateYear, formType } = req.params;
+
+  const formioFormUrl = formUrl[rebateYear][formType];
+
+  if (!formioFormUrl) {
+    const errorStatus = 400;
+    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formType.toUpperCase()}.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  axiosFormio(req)
+    .get(`${formioFormUrl}/storage/s3`, { params: query })
+    .then((axiosRes) => axiosRes.data)
+    .then((fileMetadata) => res.json(fileMetadata))
+    .catch((error) => {
+      // NOTE: logged in axiosFormio response interceptor
+      const errorStatus = error.response?.status || 500;
+      const errorMessage = `Error downloading file from S3.`;
+      return res.status(errorStatus).json({ message: errorMessage });
+    });
+});
+
 // --- get an existing form's submission data from Formio and the BAP
 router.get("/formio/submission/:rebateYear/:formType/:id", async (req, res) => {
   const { rebateYear, formType, id } = req.params;

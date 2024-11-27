@@ -11,6 +11,7 @@ const {
 const { ensureAuthenticated, ensureHelpdesk } = require("../middleware");
 const { getBapFormSubmissionData } = require("../utilities/bap");
 const { getRebateIdFieldName } = require("../utilities/formio");
+const log = require("../utilities/logger");
 
 /**
  * @typedef {'2022' | '2023' | '2024'} RebateYear
@@ -273,6 +274,7 @@ router.get("/formio/submission/:rebateYear/:formType/:id", async (req, res) => {
 // --- post an update to an existing form submission to Formio (change submission to 'draft')
 router.post("/formio/submission/:rebateYear/:formType/:mongoId", (req, res) => {
   const { body } = req;
+  const { mail } = req.user;
   const { rebateYear, formType, mongoId } = req.params;
 
   // NOTE: included to support EPA API scan
@@ -292,14 +294,22 @@ router.post("/formio/submission/:rebateYear/:formType/:mongoId", (req, res) => {
 
   if (!formioFormUrl) {
     const errorStatus = 400;
-    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formName}.`;
+    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formName} form.`;
     return res.status(errorStatus).json({ message: errorMessage });
   }
 
   axiosFormio(req)
     .put(`${formioFormUrl}/submission/${mongoId}`, body)
     .then((axiosRes) => axiosRes.data)
-    .then((submission) => res.json(submission))
+    .then((submission) => {
+      const logMessage =
+        `Helpdesk: User with email '${mail}' updated ${rebateYear} ` +
+        `${formType.toUpperCase()} submission '${mongoId}' ` +
+        `(status: '${submission.state}').`;
+      log({ level: "info", message: logMessage, req });
+
+      return res.json(submission);
+    })
     .catch((error) => {
       // NOTE: error is logged in axiosFormio response interceptor
       const errorStatus = error.response?.status || 500;

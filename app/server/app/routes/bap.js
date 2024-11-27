@@ -64,10 +64,12 @@ router.get("/sam", (req, res) => {
         entities,
       });
     })
-    .catch((_error) => {
-      // NOTE: logged in bap verifyBapConnection
+    .catch((error) => {
       const errorStatus = 500;
       const errorMessage = `Error getting SAM.gov data from the BAP.`;
+
+      log({ level: "error", message: errorMessage, req, otherInfo: error });
+
       return res.status(errorStatus).json({ message: errorMessage });
     });
 });
@@ -76,10 +78,12 @@ router.get("/sam", (req, res) => {
 router.get("/submissions", storeBapComboKeys, (req, res) => {
   return getBapFormSubmissionsStatuses(req)
     .then((submissions) => res.json(submissions))
-    .catch((_error) => {
-      // NOTE: logged in bap verifyBapConnection
+    .catch((error) => {
       const errorStatus = 500;
       const errorMessage = `Error getting form submissions statuses from the BAP.`;
+
+      log({ level: "error", message: errorMessage, req, otherInfo: error });
+
       return res.status(errorStatus).json({ message: errorMessage });
     });
 });

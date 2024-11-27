@@ -159,12 +159,12 @@ export const formioNameField = {
   2023: {
     frf: "_user_name",
     prf: "_user_name",
-    crf: "", // TODO
+    crf: "_user_name", // TODO: confirm when the 2023 CRF is created
   },
   2024: {
     frf: "_user_name",
-    prf: "", // TODO
-    crf: "", // TODO
+    prf: "_user_name",
+    crf: "_user_name", // TODO: confirm when the 2024 CRF is created
   },
 };
 
@@ -180,12 +180,12 @@ export const formioEmailField = {
   2023: {
     frf: "_user_email",
     prf: "_user_email",
-    crf: "", // TODO
+    crf: "_user_email", // TODO: confirm when the 2023 CRF is created
   },
   2024: {
     frf: "_user_email",
-    prf: "", // TODO
-    crf: "", // TODO
+    prf: "_user_email",
+    crf: "_user_email", // TODO: confirm when the 2024 CRF is created
   },
 };
 
@@ -205,7 +205,7 @@ export const formioBapRebateIdField = {
   },
   2024: {
     frf: "", // NOTE: no BAP rebate ID in the FRF
-    prf: "", // TODO
-    crf: "", // TODO
+    prf: "_bap_rebate_id",
+    crf: "_bap_rebate_id",
   },
 };

@@ -1479,6 +1479,12 @@ function fetchPRFSubmission({ rebateYear, req, res }) {
         return res.status(errorStatus).json({ message: errorMessage });
       }
 
+      /** Modify 2024 PRF's NCES API endpoint URL for local development */
+      const formSchemaJson =
+        NODE_ENV === "development" && rebateYear === "2024"
+          ? modifyDatasourceComponentsUrl(schema)
+          : schema;
+
       /**
        * NOTE: We can't just use the returned submission data here because
        * Formio returns the string literal 'YES' instead of a base64 encoded
@@ -1493,7 +1499,7 @@ function fetchPRFSubmission({ rebateYear, req, res }) {
         .then((submission) => {
           return res.json({
             userAccess: true,
-            formSchema: { url: formioFormUrl, json: schema },
+            formSchema: { url: formioFormUrl, json: formSchemaJson },
             submission,
           });
         });

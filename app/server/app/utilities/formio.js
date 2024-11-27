@@ -552,16 +552,20 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               County__c,
             } = Account || {};
 
-            const jsonOrg = frf2024RecordJson.data.organizations.find((org) => {
-              const matchedName = org?.org_orgName?.trim() === orgName?.trim();
-              const matchedEmail =
-                org.org_contactEmail?.trim()?.toLowerCase() ===
-                Email?.trim()?.toLowerCase();
+            const jsonOrg = frf2024RecordJson.data.org_organizations.find(
+              (org) => {
+                const matchedName = org?.org_name?.trim() === orgName?.trim();
+                const matchedEmail =
+                  org.org_contact_email?.trim()?.toLowerCase() ===
+                  Email?.trim()?.toLowerCase();
 
-              return matchedName && matchedEmail;
-            });
+                return matchedName && matchedEmail;
+              },
+            );
 
-            const orgAlreadyAdded = array.some((org) => org._org_id === orgId);
+            const orgAlreadyAdded = array.some(
+              (org) => org._bap_org_id === orgId,
+            );
 
             /**
              * Ensure the org exists in the 2024 FRF submission's

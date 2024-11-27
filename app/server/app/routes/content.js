@@ -34,13 +34,6 @@ router.get("/", (req, res) => {
       const localFilePath = resolve(__dirname, "../content", filename);
       const s3FileUrl = `${s3BucketUrl}/content/${filename}`;
 
-      const logMessage =
-        NODE_ENV === "development"
-          ? `Reading ${filename} file from disk.`
-          : `Fetching ${filename} from S3 bucket.`;
-
-      log({ level: "info", message: logMessage });
-
       /**
        * local development: read files directly from disk
        * Cloud.gov: fetch files from the public s3 bucket
@@ -51,6 +44,13 @@ router.get("/", (req, res) => {
     }),
   )
     .then((data) => {
+      const logMessage =
+        NODE_ENV === "development"
+          ? `Read ${filenames.length} content files from disk.`
+          : `Fetched ${filenames.length} content files from S3 bucket.`;
+
+      log({ level: "info", message: logMessage });
+
       return res.json({
         siteAlert: data[0],
         helpdeskIntro: data[1],

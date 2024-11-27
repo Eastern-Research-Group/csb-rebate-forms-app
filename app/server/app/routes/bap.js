@@ -76,6 +76,20 @@ router.get("/sam", (req, res) => {
 
 // --- get user's form submissions statuses from the BAP
 router.get("/submissions", storeBapComboKeys, (req, res) => {
+  const { bapComboKeys } = req;
+  const { mail } = req.user;
+
+  if (bapComboKeys.length === 0) {
+    const logMessage =
+      `User with email '${mail}' attempted to fetch form submissions ` +
+      `from the BAP without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
   return getBapFormSubmissionsStatuses(req)
     .then((submissions) => res.json(submissions))
     .catch((error) => {

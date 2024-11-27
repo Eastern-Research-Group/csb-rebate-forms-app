@@ -6,6 +6,7 @@ const {
   getSamEntities,
   getBapFormSubmissionsStatuses,
 } = require("../utilities/bap");
+const { checkUserData } = require("../utilities/user");
 const log = require("../utilities/logger");
 
 const router = express.Router();
@@ -26,10 +27,9 @@ router.use(ensureAuthenticated);
 
 // --- get user's SAM.gov data from the BAP
 router.get("/sam", (req, res) => {
-  const { mail, memberof } = req.user;
-  const userRoles = memberof.split(",");
-  const adminOrHelpdeskUser =
-    userRoles.includes("csb_admin") || userRoles.includes("csb_helpdesk");
+  const { mail } = req.user;
+
+  const { adminOrHelpdeskUser } = checkUserData({ req });
 
   if (!mail) {
     const logMessage = `User with no email address attempted to fetch SAM.gov records.`;
@@ -76,10 +76,15 @@ router.get("/sam", (req, res) => {
 
 // --- get user's form submissions statuses from the BAP
 router.get("/submissions", storeBapComboKeys, (req, res) => {
-  const { bapComboKeys } = req;
   const { mail } = req.user;
 
-  if (bapComboKeys.length === 0) {
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
     const logMessage =
       `User with email '${mail}' attempted to fetch form submissions ` +
       `from the BAP without any SAM.gov combo keys.`;

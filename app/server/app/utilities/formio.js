@@ -1090,6 +1090,18 @@ function downloadS3FileMetadata({ rebateYear, req, res }) {
  */
 function fetchFRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
+  const { mail } = req.user;
+
+  if (bapComboKeys.length === 0) {
+    const logMessage =
+      `User with email '${mail}' attempted to fetch ${rebateYear} FRF ` +
+      `submissions from Formio without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
 
   const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
   const comboKeySearchParam = `&data.${comboKeyFieldName}=`;
@@ -1331,6 +1343,18 @@ function updateFRFSubmission({ rebateYear, req, res }) {
  */
 function fetchPRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
+  const { mail } = req.user;
+
+  if (bapComboKeys.length === 0) {
+    const logMessage =
+      `User with email '${mail}' attempted to fetch ${rebateYear} PRF ` +
+      `submissions from Formio without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
 
   const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
   const comboKeySearchParam = `&data.${comboKeyFieldName}=`;
@@ -1692,6 +1716,18 @@ function deletePRFSubmission({ rebateYear, req, res }) {
  */
 function fetchCRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
+  const { mail } = req.user;
+
+  if (bapComboKeys.length === 0) {
+    const logMessage =
+      `User with email '${mail}' attempted to fetch ${rebateYear} CRF ` +
+      `submissions from Formio without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
 
   const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
   const comboKeySearchParam = `&data.${comboKeyFieldName}=`;
@@ -1964,6 +2000,18 @@ function updateCRFSubmission({ rebateYear, req, res }) {
  */
 function fetchChangeRequests({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
+  const { mail } = req.user;
+
+  if (bapComboKeys.length === 0) {
+    const logMessage =
+      `User with email '${mail}' attempted to fetch ${rebateYear} Change ` +
+      `Request form submissions from Formio without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
 
   const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
   const comboKeySearchParam = `&data.${comboKeyFieldName}=`;

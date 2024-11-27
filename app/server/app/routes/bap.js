@@ -1,11 +1,12 @@
 const express = require("express");
 // ---
-const { ensureAuthenticated, storeBapComboKeys } = require("../middleware");
+const { ensureAuthenticated, fetchBapComboKeys } = require("../middleware");
 const {
   // checkForBapDuplicates,
   getSamEntities,
   getBapFormSubmissionsStatuses,
 } = require("../utilities/bap");
+const { checkUserData } = require("../utilities/user");
 const log = require("../utilities/logger");
 
 const router = express.Router();
@@ -26,10 +27,9 @@ router.use(ensureAuthenticated);
 
 // --- get user's SAM.gov data from the BAP
 router.get("/sam", (req, res) => {
-  const { mail, memberof } = req.user;
-  const userRoles = memberof.split(",");
-  const adminOrHelpdeskUser =
-    userRoles.includes("csb_admin") || userRoles.includes("csb_helpdesk");
+  const { mail } = req.user;
+
+  const { adminOrHelpdeskUser } = checkUserData({ req });
 
   if (!mail) {
     const logMessage = `User with no email address attempted to fetch SAM.gov records.`;
@@ -64,22 +64,45 @@ router.get("/sam", (req, res) => {
         entities,
       });
     })
-    .catch((_error) => {
-      // NOTE: logged in bap verifyBapConnection
+    .catch((error) => {
       const errorStatus = 500;
       const errorMessage = `Error getting SAM.gov data from the BAP.`;
+
+      log({ level: "error", message: errorMessage, req, otherInfo: error });
+
       return res.status(errorStatus).json({ message: errorMessage });
     });
 });
 
 // --- get user's form submissions statuses from the BAP
-router.get("/submissions", storeBapComboKeys, (req, res) => {
+router.get("/submissions", fetchBapComboKeys, (req, res) => {
+  const { mail } = req.user;
+
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
+    const logMessage =
+      `User with email '${mail}' attempted to fetch form submissions ` +
+      `from the BAP without any SAM.gov combo keys.`;
+    log({ level: "error", message: logMessage, req });
+
+    const errorStatus = 401;
+    const errorMessage = `Unauthorized.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
   return getBapFormSubmissionsStatuses(req)
     .then((submissions) => res.json(submissions))
-    .catch((_error) => {
-      // NOTE: logged in bap verifyBapConnection
+    .catch((error) => {
       const errorStatus = 500;
       const errorMessage = `Error getting form submissions statuses from the BAP.`;
+
+      log({ level: "error", message: errorMessage, req, otherInfo: error });
+
       return res.status(errorStatus).json({ message: errorMessage });
     });
 });

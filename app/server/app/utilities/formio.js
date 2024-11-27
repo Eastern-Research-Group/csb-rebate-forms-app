@@ -19,7 +19,8 @@ const {
   getBapDataFor2022CRF,
   checkFormSubmissionPeriodAndBapStatus,
 } = require("../utilities/bap");
-const log = require("./logger");
+const { checkUserData } = require("../utilities/user");
+const log = require("../utilities/logger");
 
 const { NODE_ENV } = process.env;
 
@@ -1092,7 +1093,13 @@ function fetchFRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
   const { mail } = req.user;
 
-  if (bapComboKeys.length === 0) {
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
     const logMessage =
       `User with email '${mail}' attempted to fetch ${rebateYear} FRF ` +
       `submissions from Formio without any SAM.gov combo keys.`;
@@ -1345,7 +1352,13 @@ function fetchPRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
   const { mail } = req.user;
 
-  if (bapComboKeys.length === 0) {
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
     const logMessage =
       `User with email '${mail}' attempted to fetch ${rebateYear} PRF ` +
       `submissions from Formio without any SAM.gov combo keys.`;
@@ -1718,7 +1731,13 @@ function fetchCRFSubmissions({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
   const { mail } = req.user;
 
-  if (bapComboKeys.length === 0) {
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
     const logMessage =
       `User with email '${mail}' attempted to fetch ${rebateYear} CRF ` +
       `submissions from Formio without any SAM.gov combo keys.`;
@@ -2002,7 +2021,13 @@ function fetchChangeRequests({ rebateYear, req, res }) {
   const { bapComboKeys } = req;
   const { mail } = req.user;
 
-  if (bapComboKeys.length === 0) {
+  const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });
+
+  if (noBapComboKeys) {
+    if (adminOrHelpdeskUser) {
+      return res.json([]);
+    }
+
     const logMessage =
       `User with email '${mail}' attempted to fetch ${rebateYear} Change ` +
       `Request form submissions from Formio without any SAM.gov combo keys.`;

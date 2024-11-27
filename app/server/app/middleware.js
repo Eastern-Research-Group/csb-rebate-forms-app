@@ -193,7 +193,7 @@ function checkClientRouteExists(req, res, next) {
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-function storeBapComboKeys(req, res, next) {
+function fetchBapComboKeys(req, res, next) {
   const { mail } = req.user;
 
   getBapComboKeys(req, mail)
@@ -230,6 +230,6 @@ module.exports = {
   ensureHelpdesk,
   protectClientRoutes,
   checkClientRouteExists,
-  storeBapComboKeys,
+  fetchBapComboKeys,
   verifyMongoObjectId,
 };

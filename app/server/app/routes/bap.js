@@ -1,6 +1,6 @@
 const express = require("express");
 // ---
-const { ensureAuthenticated, storeBapComboKeys } = require("../middleware");
+const { ensureAuthenticated, fetchBapComboKeys } = require("../middleware");
 const {
   // checkForBapDuplicates,
   getSamEntities,
@@ -75,7 +75,7 @@ router.get("/sam", (req, res) => {
 });
 
 // --- get user's form submissions statuses from the BAP
-router.get("/submissions", storeBapComboKeys, (req, res) => {
+router.get("/submissions", fetchBapComboKeys, (req, res) => {
   const { mail } = req.user;
 
   const { adminOrHelpdeskUser, noBapComboKeys } = checkUserData({ req });

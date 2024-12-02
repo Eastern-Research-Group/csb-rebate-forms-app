@@ -1707,10 +1707,13 @@ function FRF2024Submission(props: { rebate: Rebate2024 }) {
   const {
     _user_email,
     _bap_entity_combo_key,
+    _bap_applicant_name,
+    _formio_schoolDistrictName,
     appInfo_uei,
     appInfo_efti,
     appInfo_organization_name,
-    _formio_schoolDistrictName,
+    org_district_name,
+    org_district_state,
   } = frf.formio.data;
 
   const date = new Date(frf.formio.modified).toLocaleDateString();
@@ -1874,6 +1877,9 @@ function FRF2024Submission(props: { rebate: Rebate2024 }) {
             email,
             title,
             name,
+            applicantName: _bap_applicant_name,
+            districtName: org_district_name,
+            districtState: org_district_state,
           }}
         />
       </td>
@@ -1995,8 +2001,14 @@ function PRF2024Submission(props: { rebate: Rebate2024 }) {
   // return if a Payment Request submission has not been created for this rebate
   if (!prf.formio) return null;
 
-  const { _user_email, _bap_entity_combo_key, _bap_rebate_id } =
-    prf.formio.data;
+  const {
+    _user_email,
+    _bap_entity_combo_key,
+    _bap_rebate_id,
+    _bap_applicant_name,
+    _bap_district_name,
+    _bap_district_state,
+  } = prf.formio.data;
 
   const date = new Date(prf.formio.modified).toLocaleDateString();
   const time = new Date(prf.formio.modified).toLocaleTimeString();
@@ -2098,6 +2110,9 @@ function PRF2024Submission(props: { rebate: Rebate2024 }) {
             email,
             title,
             name,
+            applicantName: _bap_applicant_name,
+            districtName: _bap_district_name,
+            districtState: _bap_district_state,
           }}
         />
       </td>

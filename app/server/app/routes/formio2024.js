@@ -39,7 +39,7 @@ const router = express.Router();
 router.use(ensureAuthenticated);
 
 // --- search 2024 NCES data with the provided NCES ID and return a match
-router.get("/nces/:searchText?", (req, res) => {
+router.get("/nces{/:searchText}", (req, res) => {
   searchNcesData({ rebateYear, req, res });
 });
 

@@ -178,7 +178,7 @@ fetchNcesData().then((ncesData) => {
   app.use(protectClientRoutes);
 
   /** Serve client-side routes. */
-  app.get("*", (_req, res) => {
+  app.get(/(.*)/, (_req, res) => {
     res.sendFile(resolve(__dirname, "public/index.html"));
   });
 

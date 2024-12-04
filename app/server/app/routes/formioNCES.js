@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(ensureAuthenticated);
 
 // --- Search the NCES data with the provided NCES ID and return a match
-router.get("/:searchText?", (req, res) => {
+router.get("/{:searchText}", (req, res) => {
   const { searchText } = req.params;
 
   if (!searchText) {

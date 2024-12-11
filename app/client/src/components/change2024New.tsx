@@ -28,6 +28,9 @@ type ChangeRequestData = {
   email: string;
   title: string;
   name: string;
+  applicantName: string;
+  districtName: string;
+  districtState: string;
 };
 
 type Response = { url: string; json: object };
@@ -205,8 +208,19 @@ function ChangeRequest2024Form(props: {
   closeDialog: () => void;
 }) {
   const { data, closeDialog } = props;
-  const { formType, comboKey, rebateId, mongoId, state, email, title, name } =
-    data;
+  const {
+    formType,
+    comboKey,
+    rebateId,
+    mongoId,
+    state,
+    email,
+    title,
+    name,
+    applicantName,
+    districtName,
+    districtState,
+  } = data;
 
   const content = useContentData();
   const {
@@ -290,6 +304,9 @@ function ChangeRequest2024Form(props: {
               _user_email: email,
               _user_title: title,
               _user_name: name,
+              _bap_applicant_name: applicantName,
+              _bap_district_name: districtName,
+              _bap_district_state: districtState,
               ...pendingSubmissionData.current,
             },
           }}

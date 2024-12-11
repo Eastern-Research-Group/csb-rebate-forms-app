@@ -78,13 +78,6 @@ function fetchNcesData() {
       const localFilePath = resolve(__dirname, "./content", filename);
       const s3FileUrl = `${s3BucketUrl}/content/${filename}`;
 
-      const logMessage =
-        NODE_ENV === "development"
-          ? `Reading ${filename} file from disk.`
-          : `Fetching ${filename} from S3 bucket.`;
-
-      log({ level: "info", message: logMessage });
-
       /**
        * local development: read files directly from disk
        * Cloud.gov: fetch files from the public s3 bucket
@@ -95,14 +88,19 @@ function fetchNcesData() {
     }),
   )
     .then((data) => {
+      const logMessage =
+        NODE_ENV === "development"
+          ? `Read ${filenames.length} NCES files from disk.`
+          : `Fetched ${filenames.length} NCES files from S3 bucket.`;
+
+      log({ level: "info", message: logMessage });
+
       return {
         2023: data[0],
         2024: data[1],
       };
     })
     .catch((error) => {
-      console.log(error);
-
       const errorStatus = error.response?.status || 500;
       const errorMethod = error.response?.config?.method?.toUpperCase();
       const errorUrl = error.response?.config?.url;
@@ -125,7 +123,7 @@ fetchNcesData().then((ncesData) => {
   app.use(helmet.hsts({ maxAge: 31536000 }));
 
   /** Instruct web browsers to disable caching. */
-  app.use((req, res, next) => {
+  app.use((_req, res, next) => {
     res.setHeader("Surrogate-Control", "no-store");
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate"); // prettier-ignore
     res.setHeader("Pragma", "no-cache");
@@ -164,7 +162,7 @@ fetchNcesData().then((ncesData) => {
    * (required when using sub path).
    */
   const pathRegex = new RegExp(`^\\${SERVER_BASE_PATH || ""}$`);
-  app.all(pathRegex, (req, res) => res.redirect(`${basePath}`));
+  app.all(pathRegex, (_req, res) => res.redirect(`${basePath}`));
 
   /**
    * Serve client app's static built files.
@@ -180,7 +178,7 @@ fetchNcesData().then((ncesData) => {
   app.use(protectClientRoutes);
 
   /** Serve client-side routes. */
-  app.get("*", (req, res) => {
+  app.get(/(.*)/, (_req, res) => {
     res.sendFile(resolve(__dirname, "public/index.html"));
   });
 

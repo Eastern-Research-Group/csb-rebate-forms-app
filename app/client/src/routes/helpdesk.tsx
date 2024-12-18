@@ -6,8 +6,8 @@ import {
   useQuery,
   useMutation,
 } from "@tanstack/react-query";
-import { Providers } from "@formio/js";
 import { Formio, Form } from "@formio/react";
+import s3 from "formiojs/providers/storage/s3";
 import clsx from "clsx";
 import { cloneDeep } from "lodash";
 import icon from "uswds/img/usa-icons-bg/search--white.svg";
@@ -405,6 +405,10 @@ export function Helpdesk() {
         /**
          * Change the formUrl the File component's `uploadFile` uses, so the s3
          * upload PUT request is routed through the server app.
+         *
+         * https://github.com/formio/formio.js/blob/master/src/components/file/File.js#L760
+         * https://github.com/formio/formio.js/blob/master/src/providers/storage/s3.js#L5
+         * https://github.com/formio/formio.js/blob/master/src/providers/storage/xhr.js#L90
          */
         Formio.Providers.providers.storage.s3 = function (formio: {
           formUrl: string;
@@ -412,7 +416,7 @@ export function Helpdesk() {
         }) {
           const s3Formio = cloneDeep(formio);
           s3Formio.formUrl = `${serverUrl}/api/help/formio/s3/${rebateYear}/${formType}`;
-          return Providers.providers.storage.s3(s3Formio);
+          return s3(s3Formio);
         };
 
         return Promise.resolve(res);

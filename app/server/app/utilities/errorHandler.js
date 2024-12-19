@@ -1,4 +1,4 @@
-const log = require("./logger");
+const log = require("../utilities/logger");
 
 const { NODE_ENV, CLIENT_URL, SERVER_URL } = process.env;
 const url = NODE_ENV === "development" ? CLIENT_URL : SERVER_URL;

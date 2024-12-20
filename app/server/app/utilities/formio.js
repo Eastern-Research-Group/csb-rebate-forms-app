@@ -587,7 +587,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 },
                 _bap_org_id: orgId,
                 _bap_org_name: orgName,
-                _bap_org_contact_id: contactId,
+                _bap_org_contact_id_frf: contactId,
                 _bap_org_contact_fname: FirstName,
                 _bap_org_contact_lname: LastName,
                 _bap_org_contact_title: Title,
@@ -597,7 +597,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 _bap_org_address_2: orgStreetAddress2,
                 _bap_org_county: County__c,
                 _bap_org_city: BillingCity,
-                _bap_org_state: { name: BillingState },
+                _bap_org_state: BillingState,
                 _bap_org_zip: BillingPostalCode,
               });
             }

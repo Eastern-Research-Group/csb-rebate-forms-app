@@ -1922,12 +1922,7 @@ function verifyBapConnection(req, { name, args }) {
     return setupConnection(req).then(() => callback());
   }
 
-  return bapConnection.identity().then((identityInfo) => {
-    const logMessage = `BAP Connection Info`;
-    log({ level: "info", message: logMessage, req, otherInfo: identityInfo });
-
-    return callback();
-  });
+  return callback();
 }
 
 /**

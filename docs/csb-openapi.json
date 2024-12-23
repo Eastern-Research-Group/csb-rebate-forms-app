@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "epa-csb-server",
-    "version": "6.0.0",
+    "version": "7.0.0",
     "license": {
       "name": "CC0-1.0"
     },
@@ -147,14 +147,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Unauthorized"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -171,6 +164,12 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "rebateYear": {
+                      "schema": {
+                        "type": "string",
+                        "example": "2024"
+                      }
+                    },
                     "submissionPeriodOpen": {
                       "type": "object",
                       "properties": {
@@ -207,6 +206,23 @@
                               "example": true
                             }
                           }
+                        },
+                        "2024": {
+                          "type": "object",
+                          "properties": {
+                            "frf": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "prf": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "crf": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
                         }
                       }
                     }
@@ -216,14 +232,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Unauthorized"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -255,6 +264,9 @@
               }
             }
           }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         }
       }
     },
@@ -275,6 +287,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -282,7 +297,7 @@
     "/api/formio/nces/{searchText}": {
       "get": {
         "deprecated": true,
-        "summary": "Search the NCES data with the provided NCES ID and return a match.",
+        "summary": "Search the 2022 NCES data with the provided NCES ID and return a match.",
         "parameters": [
           {
             "in": "path",
@@ -305,6 +320,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -326,6 +344,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -345,6 +366,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -366,6 +390,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -384,6 +411,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -406,6 +436,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -426,6 +459,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -447,6 +483,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -465,6 +504,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -487,6 +529,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -507,6 +552,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -518,6 +566,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -539,6 +590,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -557,6 +611,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -579,6 +636,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -599,6 +659,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -628,6 +691,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -649,6 +715,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -668,6 +737,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -689,6 +761,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -707,6 +782,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -729,6 +807,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -749,6 +830,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -770,6 +854,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -788,6 +875,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -810,6 +900,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -830,6 +923,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -841,6 +937,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -862,6 +961,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -880,6 +982,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -896,6 +1001,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -918,6 +1026,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -947,6 +1058,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -968,6 +1082,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -1008,6 +1125,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1026,6 +1146,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1048,6 +1171,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -1068,6 +1194,116 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/formio/2024/prf-submissions": {
+      "get": {
+        "summary": "Get user's 2024 PRF submissions from Formio.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "An array of 2024 PRF submissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/formio/2024/prf-submission": {
+      "post": {
+        "summary": "Post a new 2024 PRF submission to Formio.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The newly created 2024 PRF submission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/formio/2024/prf-submission/{rebateId}": {
+      "get": {
+        "summary": "Get an existing 2024 PRF's schema and submission data from Formio.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/rebateId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The 2024 PRF schema, form submission, and user access status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormioSchemaAndSubmission"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "Post an update to an existing draft 2024 PRF submission to Formio.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/rebateId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated 2024 PRF submission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/formio/2024/delete-prf-submission": {
+      "post": {
+        "summary": "Delete an existing 2024 PRF submission from Formio.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1089,6 +1325,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1107,6 +1346,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       },
@@ -1123,6 +1365,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1145,6 +1390,30 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/help/formio/s3/{rebateYear}/{formType}/storage/s3": {
+      "get": {
+        "summary": "Download Formio S3 file metadata for a submission.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/rebateYear"
+          },
+          {
+            "$ref": "#/components/parameters/formType"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1176,20 +1445,107 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormioSchemaAndSubmission"
+                  "type": "object",
+                  "properties": {
+                    "rebateId": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "000000"
+                    },
+                    "formSchema": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "https://base-path/project-name/form-path"
+                        },
+                        "json": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "formio": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "bap": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "modified": {
+                          "type": "string",
+                          "example": "2024-01-01T12:00:00.000Z"
+                        },
+                        "comboKey": {
+                          "type": "string",
+                          "example": "0000000000000000"
+                        },
+                        "mongoId": {
+                          "type": "string",
+                          "example": "000000000000000000000000"
+                        },
+                        "rebateId": {
+                          "type": "string",
+                          "example": "000000"
+                        },
+                        "reviewItemId": {
+                          "type": "string",
+                          "example": "000000A01"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "Accepted"
+                        },
+                        "reimbursementNeeded": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "Post an update to an existing form submission to Formio (change submission to 'draft').",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/rebateYear"
+          },
+          {
+            "$ref": "#/components/parameters/formType"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "The BAP CSB Rebate Id or Formio MongoDB ObjectId.",
+            "required": true,
+            "example": "000000",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated form submission.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Unauthorized"
+                  "type": "object"
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1220,14 +1576,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Unauthorized"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1256,14 +1605,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Unauthorized"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1367,6 +1709,17 @@
         }
       }
     },
+    "/api/status/formio/2024/prf": {
+      "get": {
+        "summary": "CSB Formio 2024 PRF schema check.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/status/formio/2024/change": {
       "get": {
         "summary": "CSB Formio 2024 Change Request form schema check.",
@@ -1442,16 +1795,25 @@
         }
       }
     },
-    "schemas": {
+    "responses": {
       "Unauthorized": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Unauthorized"
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
           }
         }
-      },
+      }
+    },
+    "schemas": {
       "FormioSchemaAndSubmission": {
         "type": "object",
         "properties": {

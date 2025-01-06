@@ -659,6 +659,8 @@ async function queryForBapFormSubmissionData(
     .limit(1)
     .execute(async (err, records) => ((await err) ? err : records));
 
+  if (formRecordTypeIdQuery.length === 0) return null;
+
   const formRecordTypeId = formRecordTypeIdQuery["0"].Id;
 
   // `SELECT
@@ -1909,7 +1911,9 @@ function verifyBapConnection(req, { name, args }) {
   function callback() {
     return name(...args).catch((err) => {
       const logMessage = `BAP Error: ${err}.`;
-      log({ level: "error", message: logMessage, req });
+      log({ level: "error", message: logMessage, req, otherInfo: err });
+
+      // Error: Unable to refresh session due to: No refresh token found in the connection.
 
       throw err;
     });

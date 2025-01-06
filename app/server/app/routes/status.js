@@ -136,18 +136,18 @@ router.get("/formio/2024/frf", (req, res) => {
     });
 });
 
-// router.get("/formio/2024/prf", (req, res) => {
-//   axiosFormio(req)
-//     .get(formUrl["2024"].prf)
-//     .then((axiosRes) => axiosRes.data)
-//     .then((schema) => {
-//       return res.json({ status: verifySchema(schema) });
-//     })
-//     .catch((_error) => {
-//       // NOTE: error is logged in axiosFormio response interceptor
-//       return res.json({ status: false });
-//     });
-// });
+router.get("/formio/2024/prf", (req, res) => {
+  axiosFormio(req)
+    .get(formUrl["2024"].prf)
+    .then((axiosRes) => axiosRes.data)
+    .then((schema) => {
+      return res.json({ status: verifySchema(schema) });
+    })
+    .catch((_error) => {
+      // NOTE: error is logged in axiosFormio response interceptor
+      return res.json({ status: false });
+    });
+});
 
 // router.get("/formio/2024/crf", (req, res) => {
 //   axiosFormio(req)

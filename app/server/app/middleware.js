@@ -91,10 +91,8 @@ function ensureHelpdesk(req, res, next) {
   const userRoles = memberof?.split(",") || [];
 
   if (!userRoles.includes("csb_admin") && !userRoles.includes("csb_helpdesk")) {
-    if (!req.originalUrl.includes("/helpdesk-access")) {
-      const logMessage = `User with email ${mail} attempted to perform an admin/helpdesk action without correct privileges.`;
-      log({ level: "error", message: logMessage, req });
-    }
+    const logMessage = `User with email ${mail} attempted to perform an admin/helpdesk action without correct privileges.`;
+    log({ level: "error", message: logMessage, req });
 
     const errorStatus = 401;
     const errorMessage = `Unauthorized.`;

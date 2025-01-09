@@ -393,6 +393,12 @@ export function Helpdesk() {
   }>({ fetched: false, results: [] });
 
   useEffect(() => {
+    if (helpdeskAccess === "failure") {
+      navigate("/", { replace: true });
+    }
+  }, [navigate, helpdeskAccess]);
+
+  useEffect(() => {
     queryClient.resetQueries({ queryKey: ["helpdesk/submission"] });
   }, [queryClient]);
 
@@ -456,7 +462,11 @@ export function Helpdesk() {
   }
 
   if (helpdeskAccess === "failure") {
-    navigate("/", { replace: true });
+    /**
+     * NOTE: this is just included for completeness, as before this is rendered,
+     * the user will have been redirected to their dashboard via the useEffect()
+     */
+    return null;
   }
 
   return (

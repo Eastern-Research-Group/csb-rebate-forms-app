@@ -304,7 +304,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  CSB_Manufacturer__c: string
  *  CSB_Manufacturer_if_Other__c: string | null
  *  CSB_Annual_Fuel_Consumption__c: number
- *  Annual_Mileage__c: number
+ *  Old_Bus_Average_Annual_Mileage__c: number
  *  Old_Bus_Estimated_Remaining_Life__c: number
  *  Old_Bus_Annual_Idling_Hours__c: number
  *  New_Bus_Infra_Rebate_Requested__c: number
@@ -1465,7 +1465,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
   //   CSB_Manufacturer__c,
   //   CSB_Manufacturer_if_Other__c,
   //   CSB_Annual_Fuel_Consumption__c,
-  //   Annual_Mileage__c,
+  //   Old_Bus_Average_Annual_Mileage__c,
   //   Old_Bus_Estimated_Remaining_Life__c,
   //   Old_Bus_Annual_Idling_Hours__c,
   //   New_Bus_Infra_Rebate_Requested__c,
@@ -1501,7 +1501,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         CSB_Manufacturer__c: 1,
         CSB_Manufacturer_if_Other__c: 1,
         CSB_Annual_Fuel_Consumption__c: 1,
-        Annual_Mileage__c: 1,
+        Old_Bus_Average_Annual_Mileage__c: 1,
         Old_Bus_Estimated_Remaining_Life__c: 1,
         Old_Bus_Annual_Idling_Hours__c: 1,
         New_Bus_Infra_Rebate_Requested__c: 1,

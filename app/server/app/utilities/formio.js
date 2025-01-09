@@ -621,7 +621,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             CSB_Manufacturer__c,
             CSB_Manufacturer_if_Other__c,
             CSB_Annual_Fuel_Consumption__c,
-            Annual_Mileage__c,
+            Old_Bus_Average_Annual_Mileage__c,
             Old_Bus_Estimated_Remaining_Life__c,
             Old_Bus_Annual_Idling_Hours__c,
             New_Bus_Infra_Rebate_Requested__c,
@@ -661,7 +661,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             bus_existing_manufacturer: CSB_Manufacturer__c,
             bus_existing_manufacturer_other: CSB_Manufacturer_if_Other__c,
             bus_existing_annual_fuel_consumption: CSB_Annual_Fuel_Consumption__c, // prettier-ignore
-            bus_existing_annual_mileage: Annual_Mileage__c,
+            bus_existing_annual_mileage: Old_Bus_Average_Annual_Mileage__c,
             bus_existing_remaining_life: Old_Bus_Estimated_Remaining_Life__c,
             bus_existing_idling_hours: Old_Bus_Annual_Idling_Hours__c,
             bus_new_owner: {

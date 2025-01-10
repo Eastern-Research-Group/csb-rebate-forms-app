@@ -466,6 +466,7 @@ const {
  */
 function setupConnection(req) {
   const bapConnection = new jsforce.Connection({
+    version: "62.0",
     oauth2: {
       clientId: BAP_CLIENT_ID,
       clientSecret: BAP_CLIENT_SECRET,
@@ -1913,7 +1914,14 @@ function verifyBapConnection(req, { name, args }) {
       const logMessage = `BAP Error: ${err}.`;
       log({ level: "error", message: logMessage, req, otherInfo: err });
 
+      // TODO: Handle the following error:
       // Error: Unable to refresh session due to: No refresh token found in the connection.
+
+      if (err?.includes("No refresh token found in the connection.")) {
+        log({ level: "info", message: "Re-establishing BAP connection.", req });
+
+        // Re-establish the BAP connection.
+      }
 
       throw err;
     });

@@ -15,9 +15,15 @@ const {
   CSB_2024_FRF_OPEN,
   CSB_2024_PRF_OPEN,
   CSB_2024_CRF_OPEN,
-  FORMIO_BASE_URL,
-  FORMIO_PROJECT_NAME,
-  FORMIO_API_KEY,
+  FORMIO_2022_FRF_SUBSTRING,
+  FORMIO_2022_PRF_SUBSTRING,
+  FORMIO_2022_CRF_SUBSTRING,
+  FORMIO_2023_FRF_SUBSTRING,
+  FORMIO_2023_PRF_SUBSTRING,
+  FORMIO_2023_CRF_SUBSTRING,
+  FORMIO_2024_FRF_SUBSTRING,
+  FORMIO_2024_PRF_SUBSTRING,
+  FORMIO_2024_CRF_SUBSTRING,
   FORMIO_2022_FRF_PATH,
   FORMIO_2022_PRF_PATH,
   FORMIO_2022_CRF_PATH,
@@ -29,6 +35,9 @@ const {
   FORMIO_2024_PRF_PATH,
   FORMIO_2024_CRF_PATH,
   FORMIO_2024_CHANGE_PATH,
+  FORMIO_BASE_URL,
+  FORMIO_PROJECT_NAME,
+  FORMIO_API_KEY,
 } = process.env;
 
 const formioProjectUrl = `${FORMIO_BASE_URL}/${FORMIO_PROJECT_NAME}`;
@@ -54,6 +63,27 @@ const formUrl = {
     prf: `${formioProjectUrl}/${FORMIO_2024_PRF_PATH}`,
     crf: `${formioProjectUrl}/${FORMIO_2024_CRF_PATH}`,
     change: `${formioProjectUrl}/${FORMIO_2024_CHANGE_PATH}`,
+  },
+};
+
+/**
+ * Stores intro text substring found within each form by rebate year.
+ */
+const formIntroSubstring = {
+  2022: {
+    frf: FORMIO_2022_FRF_SUBSTRING,
+    prf: FORMIO_2022_PRF_SUBSTRING,
+    crf: FORMIO_2022_CRF_SUBSTRING,
+  },
+  2023: {
+    frf: FORMIO_2023_FRF_SUBSTRING,
+    prf: FORMIO_2023_PRF_SUBSTRING,
+    crf: FORMIO_2023_CRF_SUBSTRING,
+  },
+  2024: {
+    frf: FORMIO_2024_FRF_SUBSTRING,
+    prf: FORMIO_2024_PRF_SUBSTRING,
+    crf: FORMIO_2024_CRF_SUBSTRING,
   },
 };
 
@@ -138,6 +168,7 @@ module.exports = {
   axiosFormio,
   formioProjectUrl,
   formUrl,
+  formIntroSubstring,
   submissionPeriodOpen,
   formioCSBMetadata,
   formioExampleMongoId,

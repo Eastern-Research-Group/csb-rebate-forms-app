@@ -75,6 +75,7 @@ jobs:
       FORMIO_PROJECT_NAME: ${{ secrets.FORMIO_PROJECT_NAME }}
       FORMIO_API_KEY: ${{ secrets.FORMIO_API_KEY }}
       FORMIO_PKG_AUTH_TOKEN: ${{ secrets.FORMIO_PKG_AUTH_TOKEN }}
+      BAP_REST_API_VERSION: ${{ secrets.BAP_REST_API_VERSION }}
       BAP_CLIENT_ID: ${{ secrets.BAP_CLIENT_ID }}
       BAP_CLIENT_SECRET: ${{ secrets.BAP_CLIENT_SECRET }}
       BAP_URL: ${{ secrets.BAP_URL }}
@@ -177,6 +178,7 @@ jobs:
           cf set-env $APP_NAME "FORMIO_BASE_URL" "$FORMIO_BASE_URL" > /dev/null
           cf set-env $APP_NAME "FORMIO_PROJECT_NAME" "$FORMIO_PROJECT_NAME" > /dev/null
           cf set-env $APP_NAME "FORMIO_API_KEY" "$FORMIO_API_KEY" > /dev/null
+          cf set-env $APP_NAME "BAP_REST_API_VERSION" "$BAP_REST_API_VERSION" > /dev/null
           cf set-env $APP_NAME "BAP_CLIENT_ID" "$BAP_CLIENT_ID" > /dev/null
           cf set-env $APP_NAME "BAP_CLIENT_SECRET" "$BAP_CLIENT_SECRET" > /dev/null
           cf set-env $APP_NAME "BAP_URL" "$BAP_URL" > /dev/null

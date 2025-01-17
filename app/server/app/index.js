@@ -62,6 +62,12 @@ const requiredEnvironmentVariables = [
   "FORMIO_BASE_URL",
   "FORMIO_PROJECT_NAME",
   "FORMIO_API_KEY",
+  "BAP_REST_API_VERSION",
+  "BAP_CLIENT_ID",
+  "BAP_CLIENT_SECRET",
+  "BAP_URL",
+  "BAP_USER",
+  "BAP_PASSWORD",
   "S3_PUBLIC_BUCKET",
   "S3_PUBLIC_REGION",
 ];

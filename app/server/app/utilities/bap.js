@@ -453,6 +453,7 @@ const { submissionPeriodOpen } = require("../config/formio");
 
 const {
   SERVER_URL,
+  BAP_REST_API_VERSION,
   BAP_CLIENT_ID,
   BAP_CLIENT_SECRET,
   BAP_URL,
@@ -466,7 +467,7 @@ const {
  */
 function setupConnection(req) {
   const bapConnection = new jsforce.Connection({
-    version: "62.0",
+    version: BAP_REST_API_VERSION,
     oauth2: {
       clientId: BAP_CLIENT_ID,
       clientSecret: BAP_CLIENT_SECRET,

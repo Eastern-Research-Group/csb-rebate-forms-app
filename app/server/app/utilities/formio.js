@@ -1999,7 +1999,7 @@ function updateCRFSubmission({ rebateYear, req, res }) {
           return res.status(errorStatus).json({ message: errorMessage });
         });
     })
-    .catch((error) => {
+    .catch((_error) => {
       const logMessage =
         `User with email '${mail}' attempted to update ${rebateYear} CRF ` +
         `submission '${rebateId}' when the CSB CRF enrollment period was closed.`;

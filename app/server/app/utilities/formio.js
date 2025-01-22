@@ -644,14 +644,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               item.Relationship_Type__c === newBusOwnerType,
           );
 
-          // const existingOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
-          //   (item) => item.Id === existingOwnerRecord?.Contact__r?.RecordTypeId,
-          // );
-
-          // const newOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
-          //   (item) => item.Id === newOwnerRecord?.Contact__r?.RecordTypeId,
-          // );
-
           return {
             bus_number: Rebate_Item_num__c,
             bus_existing_owner: {

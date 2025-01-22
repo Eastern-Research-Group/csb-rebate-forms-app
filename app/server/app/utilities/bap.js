@@ -250,6 +250,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Primary_Applicant__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    RecordTypeId: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -259,6 +260,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Alternate_Applicant__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    RecordTypeId: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -277,6 +279,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  School_District_Contact__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    RecordTypeId: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -320,6 +323,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Contact__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    RecordTypeId: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -337,6 +341,12 @@ const { submissionPeriodOpen } = require("../config/formio");
  *    }
  *  }
  * }[]} frf2024BusRecordsContactsQueries
+ * @property {{
+ *  attributes: { type: "RecordType", url: string }
+ *  Id: string
+ *  Name: string
+ *  Description: string
+ * }[]} frf2024ContactsRecordTypesQuery
  */
 
 /**
@@ -1341,12 +1351,14 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
   //   Applicant_Organization__r.Id
   //   Applicant_Organization__r.County__c
   //   Primary_Applicant__r.Id,
+  //   Primary_Applicant__r.RecordTypeId,
   //   Primary_Applicant__r.FirstName,
   //   Primary_Applicant__r.LastName,
   //   Primary_Applicant__r.Title,
   //   Primary_Applicant__r.Email,
   //   Primary_Applicant__r.Phone,
   //   Alternate_Applicant__r.Id,
+  //   Alternate_Applicant__r.RecordTypeId,
   //   Alternate_Applicant__r.FirstName,
   //   Alternate_Applicant__r.LastName,
   //   Alternate_Applicant__r.Title,
@@ -1359,6 +1371,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
   //   CSB_School_District__r.BillingState,
   //   CSB_School_District__r.BillingPostalCode,
   //   School_District_Contact__r.Id,
+  //   School_District_Contact__r.RecordTypeId
   //   School_District_Contact__r.FirstName,
   //   School_District_Contact__r.LastName,
   //   School_District_Contact__r.Title,
@@ -1393,12 +1406,14 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         "Applicant_Organization__r.Id": 1,
         "Applicant_Organization__r.County__c": 1,
         "Primary_Applicant__r.Id": 1,
+        "Primary_Applicant__r.RecordTypeId": 1,
         "Primary_Applicant__r.FirstName": 1,
         "Primary_Applicant__r.LastName": 1,
         "Primary_Applicant__r.Title": 1,
         "Primary_Applicant__r.Email": 1,
         "Primary_Applicant__r.Phone": 1,
         "Alternate_Applicant__r.Id": 1,
+        "Alternate_Applicant__r.RecordTypeId": 1,
         "Alternate_Applicant__r.FirstName": 1,
         "Alternate_Applicant__r.LastName": 1,
         "Alternate_Applicant__r.Title": 1,
@@ -1411,6 +1426,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         "CSB_School_District__r.BillingState": 1,
         "CSB_School_District__r.BillingPostalCode": 1,
         "School_District_Contact__r.Id": 1,
+        "School_District_Contact__r.RecordTypeId": 1,
         "School_District_Contact__r.FirstName": 1,
         "School_District_Contact__r.LastName": 1,
         "School_District_Contact__r.Title": 1,
@@ -1426,7 +1442,8 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
     )
     .execute(async (err, records) => ((await err) ? err : records));
 
-  const frf2024RecordId = frf2024RecordQuery["0"].Id;
+  const frf2024Record = frf2024RecordQuery["0"];
+  const frf2024RecordId = frf2024Record.Id;
 
   // `SELECT
   //   Id
@@ -1524,6 +1541,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         //   Related_Line_Item__c,
         //   Relationship_Type__c,
         //   Contact__r.Id,
+        //   Contant__r.RecordTypeId,
         //   Contact__r.FirstName,
         //   Contact__r.LastName
         //   Contact__r.Title,
@@ -1557,6 +1575,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
               Related_Line_Item__c: 1,
               Relationship_Type__c: 1,
               "Contact__r.Id": 1,
+              "Contact__r.RecordTypeId": 1,
               "Contact__r.FirstName": 1,
               "Contact__r.LastName": 1,
               "Contact__r.Title": 1,
@@ -1576,10 +1595,51 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
     )
   ).flat();
 
+  const recordTypeIds = [];
+
+  recordTypeIds.push(frf2024Record?.Primary_Applicant__r?.RecordTypeId);
+  recordTypeIds.push(frf2024Record?.Alternate_Applicant__r?.RecordTypeId);
+  recordTypeIds.push(frf2024Record?.School_District_Contact__r?.RecordTypeId);
+
+  for (const busRecordsContactsQuery of frf2024BusRecordsContactsQueries) {
+    const { Contact__r } = busRecordsContactsQuery;
+    recordTypeIds.push(Contact__r?.RecordTypeId);
+  }
+
+  const uniqueRecordTypeIds = [...new Set(recordTypeIds)].filter(Boolean);
+
+  // `SELECT
+  //   Id,
+  //   Name,
+  //   Description
+  // FROM
+  //   RecordType
+  // WHERE
+  //   Id IN(${uniqueRecordTypeIds.map((id) => `'${id}'`)})`
+
+  const frf2024ContactsRecordTypesQuery =
+    uniqueRecordTypeIds.length === 0
+      ? []
+      : await bapConnection
+          .sobject("RecordType")
+          .find(
+            {
+              Id: { $in: uniqueRecordTypeIds },
+            },
+            {
+              // "*": 1,
+              Id: 1, // Salesforce record ID
+              Name: 1,
+              Description: 1,
+            },
+          )
+          .execute(async (err, records) => ((await err) ? err : records));
+
   return {
     frf2024RecordQuery,
     frf2024BusRecordsQuery,
     frf2024BusRecordsContactsQueries,
+    frf2024ContactsRecordTypesQuery,
   };
 }
 

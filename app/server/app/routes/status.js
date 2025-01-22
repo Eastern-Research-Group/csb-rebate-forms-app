@@ -42,7 +42,7 @@ function verifySchema({ schema, substring }) {
 
 const router = express.Router();
 
-router.get("/app", (req, res) => {
+router.get("/app", (_req, res) => {
   return res.json({ status: true });
 });
 

@@ -503,7 +503,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
           frf2024RecordQuery,
           frf2024BusRecordsQuery,
           frf2024BusRecordsContactsQueries,
-          frf2024ContactsRecordTypesQuery,
         } = results;
 
         const existingBusOwnerType = "Old Bus Private Fleet Owner (if changed)";
@@ -536,7 +535,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
 
             const {
               Id: contactId,
-              RecordTypeId,
+              Record_Type_Name__c,
               FirstName,
               LastName,
               Title,
@@ -579,10 +578,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 BillingStreet ?? "\n"
               ).split("\n");
 
-              const orgContactRecordType = frf2024ContactsRecordTypesQuery.find(
-                (item) => item.Id === RecordTypeId,
-              );
-
               array.push({
                 _bap_org_frf: true,
                 org_number: jsonOrg.org_number,
@@ -594,7 +589,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 _bap_org_id: orgId,
                 _bap_org_name: orgName,
                 _bap_org_contact_id_frf: contactId,
-                _bap_org_contact_recordtype: orgContactRecordType?.Name || "",
+                _bap_org_contact_recordtype: Record_Type_Name__c,
                 _bap_org_contact_fname: FirstName,
                 _bap_org_contact_lname: LastName,
                 _bap_org_contact_title: Title,
@@ -649,13 +644,13 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               item.Relationship_Type__c === newBusOwnerType,
           );
 
-          const existingOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
-            (item) => item.Id === existingOwnerRecord?.Contact__r?.RecordTypeId,
-          );
+          // const existingOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
+          //   (item) => item.Id === existingOwnerRecord?.Contact__r?.RecordTypeId,
+          // );
 
-          const newOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
-            (item) => item.Id === newOwnerRecord?.Contact__r?.RecordTypeId,
-          );
+          // const newOwnerRecordType = frf2024ContactsRecordTypesQuery.find(
+          //   (item) => item.Id === newOwnerRecord?.Contact__r?.RecordTypeId,
+          // );
 
           return {
             bus_number: Rebate_Item_num__c,
@@ -663,7 +658,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               org_id: existingOwnerRecord?.Contact__r?.Account?.Id,
               org_name: existingOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: existingOwnerRecord?.Contact__r?.Id,
-              org_contact_recordtype: existingOwnerRecordType?.Name || "",
+              org_contact_recordtype: existingOwnerRecord?.Contact__r?.Record_Type_Name__c, // prettier-ignore
               org_contact_fname: existingOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: existingOwnerRecord?.Contact__r?.LastName,
             },
@@ -684,7 +679,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               org_id: newOwnerRecord?.Contact__r?.Account?.Id,
               org_name: newOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: newOwnerRecord?.Contact__r?.Id,
-              org_contact_recordtype: newOwnerRecordType?.Name || "",
+              org_contact_recordtype: newOwnerRecord?.Contact__r?.Record_Type_Name__c, // prettier-ignore
               org_contact_fname: newOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: newOwnerRecord?.Contact__r?.LastName,
             },
@@ -694,18 +689,6 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             _bus_new_ada_from_frf: New_Bus_ADA_Compliant__c,
           };
         });
-
-        const primaryContactRecordType = frf2024ContactsRecordTypesQuery.find(
-          (item) => item.Id === Primary_Applicant__r?.RecordTypeId,
-        );
-
-        const alternateContactRecordType = frf2024ContactsRecordTypesQuery.find(
-          (item) => item.Id === Alternate_Applicant__r?.RecordTypeId,
-        );
-
-        const districtContactRecordType = frf2024ContactsRecordTypesQuery.find(
-          (item) => item.Id === School_District_Contact__r?.RecordTypeId,
-        );
 
         return {
           data: {
@@ -733,14 +716,14 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             _bap_govt_bus_poc_email: GOVT_BUS_POC_EMAIL__c,
             _bap_alt_govt_bus_poc_email: ALT_GOVT_BUS_POC_EMAIL__c,
             _bap_primary_id: Primary_Applicant__r?.Id,
-            _bap_primary_recordtype: primaryContactRecordType?.Name || "",
+            _bap_primary_recordtype: Primary_Applicant__r?.Record_Type_Name__c,
             _bap_primary_fname: Primary_Applicant__r?.FirstName,
             _bap_primary_lname: Primary_Applicant__r?.LastName,
             _bap_primary_title: Primary_Applicant__r?.Title,
             _bap_primary_email: Primary_Applicant__r?.Email,
             _bap_primary_phone: Primary_Applicant__r?.Phone,
             _bap_alternate_id: Alternate_Applicant__r?.Id,
-            _bap_alternate_recordtype: alternateContactRecordType?.Name,
+            _bap_alternate_recordtype: Alternate_Applicant__r?.Record_Type_Name__c, // prettier-ignore
             _bap_alternate_fname: Alternate_Applicant__r?.FirstName,
             _bap_alternate_lname: Alternate_Applicant__r?.LastName,
             _bap_alternate_title: Alternate_Applicant__r?.Title,
@@ -762,7 +745,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             },
             _bap_district_self_certify: Self_Certification_Category__c,
             _bap_district_contact_id: School_District_Contact__r?.Id,
-            _bap_district_contact_recordtype: districtContactRecordType?.Name || "", // prettier-ignore
+            _bap_district_contact_recordtype: School_District_Contact__r?.Record_Type_Name__c, // prettier-ignore
             _bap_district_contact_fname: School_District_Contact__r?.FirstName,
             _bap_district_contact_lname: School_District_Contact__r?.LastName,
             _bap_district_contact_title: School_District_Contact__r?.Title,

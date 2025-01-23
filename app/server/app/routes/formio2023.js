@@ -11,6 +11,8 @@ const {
   uploadS3FileMetadata,
   downloadS3FileMetadata,
   //
+  fetchSubmissionPDF,
+  //
   fetchFRFSubmissions,
   createFRFSubmission,
   fetchFRFSubmission,
@@ -60,6 +62,11 @@ router.post(
     uploadS3FileMetadata({ rebateYear, req, res });
   },
 );
+
+// --- get a PDF of a 2023 form submission from Formio
+router.get("/pdf/:formType/:mongoId", fetchBapComboKeys, (req, res) => {
+  fetchSubmissionPDF({ rebateYear, req, res });
+});
 
 // --- get user's 2023 FRF submissions from Formio
 router.get("/frf-submissions", fetchBapComboKeys, (req, res) => {

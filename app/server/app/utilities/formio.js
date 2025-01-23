@@ -3,6 +3,7 @@ const ObjectId = require("mongodb").ObjectId;
 // ---
 const {
   axiosFormio,
+  formioProjectUrl,
   formUrl,
   submissionPeriodOpen,
   formioCSBMetadata,
@@ -1086,6 +1087,101 @@ function downloadS3FileMetadata({ rebateYear, req, res }) {
       // NOTE: logged in axiosFormio response interceptor
       const errorStatus = error.response?.status || 500;
       const errorMessage = `Error downloading file from S3.`;
+      return res.status(errorStatus).json({ message: errorMessage });
+    });
+}
+
+/**
+ * @param {Object} param
+ * @param {RebateYear} param.rebateYear
+ * @param {express.Request} param.req
+ * @param {express.Response} param.res
+ */
+function fetchSubmissionPDF({ rebateYear, req, res }) {
+  const { bapComboKeys } = req;
+  const { mail } = req.user;
+  const { formType, mongoId } = req.params;
+
+  // NOTE: included to support EPA API scan
+  if (mongoId === formioExampleMongoId) {
+    return res.json("");
+  }
+
+  /** NOTE: verifyMongoObjectId */
+  if (!ObjectId.isValid(mongoId)) {
+    const errorStatus = 400;
+    const errorMessage = `MongoDB ObjectId validation error for: '${mongoId}'.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
+
+  const formioFormUrl = formUrl[rebateYear][formType];
+
+  if (!formioFormUrl) {
+    const errorStatus = 400;
+    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formType.toUpperCase()}.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  axiosFormio(req)
+    .get(`${formioFormUrl}/submission/${mongoId}`)
+    .then((axiosRes) => axiosRes.data)
+    .then((submission) => {
+      const projectId = submission.project;
+      const formId = submission.form;
+      const comboKey = submission.data?.[comboKeyFieldName];
+
+      if (!bapComboKeys.includes(comboKey)) {
+        const logMessage =
+          `User with email '${mail}' attempted to download a PDF of ` +
+          `${rebateYear} ${formType.toUpperCase()} submission '${mongoId}' ` +
+          `that they do not have access to.`;
+        log({ level: "warn", message: logMessage, req });
+
+        const errorStatus = 401;
+        const errorMessage = `Unauthorized.`;
+        return res.status(errorStatus).json({ message: errorMessage });
+      }
+
+      const headers = {
+        "x-allow": `GET:/project/${projectId}/form/${formId}/submission/${mongoId}/download`,
+        "x-expire": 3600,
+      };
+
+      axiosFormio(req)
+        .get(`${formioProjectUrl}/token`, { headers })
+        .then((axiosRes) => axiosRes.data)
+        .then((json) => {
+          const url = `${formioProjectUrl}/form/${formId}/submission/${mongoId}/download?token=${json.key}`;
+
+          axiosFormio(req)
+            .get(url, { responseType: "arraybuffer" })
+            .then((axiosRes) => axiosRes.data)
+            .then((fileData) => {
+              const base64String = Buffer.from(fileData).toString("base64");
+              res.attachment(`${mongoId}.pdf`);
+              res.type("application/pdf");
+              res.send(base64String);
+            })
+            .catch((error) => {
+              // NOTE: error is logged in axiosFormio response interceptor
+              const errorStatus = error.response?.status || 500;
+              const errorMessage = `Error getting Formio submission PDF.`;
+              return res.status(errorStatus).json({ message: errorMessage });
+            });
+        })
+        .catch((error) => {
+          // NOTE: error is logged in axiosFormio response interceptor
+          const errorStatus = error.response?.status || 500;
+          const errorMessage = `Error getting Formio download token.`;
+          return res.status(errorStatus).json({ message: errorMessage });
+        });
+    })
+    .catch((error) => {
+      // NOTE: error is logged in axiosFormio response interceptor
+      const errorStatus = error.response?.status || 500;
+      const errorMessage = `Error getting Formio ${rebateYear} ${formType.toUpperCase()} form submission '${mongoId}'.`;
       return res.status(errorStatus).json({ message: errorMessage });
     });
 }
@@ -2221,6 +2317,8 @@ module.exports = {
   //
   uploadS3FileMetadata,
   downloadS3FileMetadata,
+  //
+  fetchSubmissionPDF,
   //
   fetchFRFSubmissions,
   createFRFSubmission,

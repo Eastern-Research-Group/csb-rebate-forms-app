@@ -373,6 +373,27 @@
         }
       }
     },
+    "/api/formio/2022/pdf/{formType}/{mongoId}": {
+      "get": {
+        "summary": "Download a PDF of a 2022 form submission.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/formType"
+          },
+          {
+            "$ref": "#/components/parameters/mongoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
     "/api/formio/2022/frf-submissions": {
       "get": {
         "summary": "Get user's 2022 FRF submissions from Formio.",
@@ -732,6 +753,27 @@
           },
           {
             "$ref": "#/components/parameters/comboKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/formio/2023/pdf/{formType}/{mongoId}": {
+      "get": {
+        "summary": "Download a PDF of a 2023 form submission.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/formType"
+          },
+          {
+            "$ref": "#/components/parameters/mongoId"
           }
         ],
         "responses": {
@@ -1104,6 +1146,27 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/formio/2024/pdf/{formType}/{mongoId}": {
+      "get": {
+        "summary": "Download a PDF of a 2024 form submission.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/formType"
+          },
+          {
+            "$ref": "#/components/parameters/mongoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }

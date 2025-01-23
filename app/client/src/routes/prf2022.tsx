@@ -19,6 +19,7 @@ import {
   useContentData,
   useConfigData,
   useBapSamData,
+  useSubmissionPDFQuery,
   useSubmissionsQueries,
   useSubmissions,
   submissionNeedsEdits,
@@ -27,7 +28,7 @@ import {
   entityHasDebtSubjectToOffset,
   getUserInfo,
 } from "@/utilities";
-import { Loading } from "@/components/loading";
+import { Loading, LoadingButtonIcon } from "@/components/loading";
 import { Message } from "@/components/message";
 import { MarkdownContent } from "@/components/markdownContent";
 import { useNotificationsActions } from "@/contexts/notifications";
@@ -40,6 +41,7 @@ function useFormioSubmissionQueryAndMutation(rebateId: string | undefined) {
 
   useEffect(() => {
     queryClient.resetQueries({ queryKey: ["formio/2022/prf-submission"] });
+    queryClient.resetQueries({ queryKey: ["formio/2022/prf-pdf"] });
   }, [queryClient]);
 
   const url = `${serverUrl}/api/formio/2022/prf-submission/${rebateId}`;
@@ -128,6 +130,12 @@ function PaymentRequestForm(props: { email: string }) {
 
   const { query, mutation } = useFormioSubmissionQueryAndMutation(rebateId);
   const { userAccess, formSchema, submission } = query.data ?? {};
+
+  const pdfQuery = useSubmissionPDFQuery({
+    rebateYear: "2022",
+    formType: "prf",
+    mongoId: submission?._id || "",
+  });
 
   /**
    * Stores when data is being posted to the server, so a loading overlay can
@@ -263,6 +271,30 @@ function PaymentRequestForm(props: { email: string }) {
           </div>
         </li>
       </ul>
+
+      {submission?._id && (
+        <p>
+          <button
+            className="usa-button font-sans-2xs margin-right-0 padding-x-105 padding-y-1"
+            type="button"
+            disabled={pdfQuery.isFetching}
+            onClick={(_ev) => pdfQuery.refetch()}
+          >
+            <span className="display-flex flex-align-center">
+              <svg
+                className="usa-icon"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use href={`${icons}#arrow_downward`} />
+              </svg>
+              <span className="margin-left-1">Download PDF</span>
+              {pdfQuery.isFetching && <LoadingButtonIcon position="end" />}
+            </span>
+          </button>
+        </p>
+      )}
 
       <Dialog as="div" open={dataIsPosting.current} onClose={(_value) => {}}>
         <div className={clsx("tw-fixed tw-inset-0 tw-bg-black/30")} />

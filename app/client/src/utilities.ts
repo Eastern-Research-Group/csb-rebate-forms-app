@@ -10,6 +10,7 @@ import { useSearchParams } from "react-router-dom";
 // ---
 import {
   type RebateYear,
+  type FormType,
   type Content,
   type UserData,
   type ConfigData,
@@ -185,6 +186,32 @@ export function useBapSamQuery() {
 export function useBapSamData() {
   const queryClient = useQueryClient();
   return queryClient.getQueryData<BapSamData>(["bap/sam"]);
+}
+
+/** Custom hook to fetch a PDF of a form submission from Formio. */
+export function useSubmissionPDFQuery(options: {
+  rebateYear: RebateYear;
+  formType: FormType;
+  mongoId: string | undefined;
+}) {
+  const { rebateYear, formType, mongoId } = options;
+
+  return useQuery({
+    queryKey: [`formio/${rebateYear}/${formType}-pdf`, { id: mongoId }],
+    queryFn: () => {
+      const url = `${serverUrl}/api/formio/${rebateYear}/pdf/${formType}/${mongoId}`;
+      return getData<string>(url);
+    },
+    onSuccess: (res) => {
+      const link = document.createElement("a");
+      link.setAttribute("href", `data:application/pdf;base64,${res}`);
+      link.setAttribute("download", `${mongoId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    enabled: false,
+  });
 }
 
 /** Custom hook to fetch Change Request form submissions from Formio. */

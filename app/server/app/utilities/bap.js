@@ -250,6 +250,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Primary_Applicant__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    Record_Type_Name__c: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -259,6 +260,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Alternate_Applicant__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    Record_Type_Name__c: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -277,6 +279,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  School_District_Contact__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    Record_Type_Name__c: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -320,6 +323,7 @@ const { submissionPeriodOpen } = require("../config/formio");
  *  Contact__r: {
  *    attributes: { type: "Contact", url: string }
  *    Id: string
+ *    Record_Type_Name__c: string
  *    FirstName: string
  *    LastName: string
  *    Title: string
@@ -453,6 +457,7 @@ const { submissionPeriodOpen } = require("../config/formio");
 
 const {
   SERVER_URL,
+  BAP_REST_API_VERSION,
   BAP_CLIENT_ID,
   BAP_CLIENT_SECRET,
   BAP_URL,
@@ -466,7 +471,7 @@ const {
  */
 function setupConnection(req) {
   const bapConnection = new jsforce.Connection({
-    version: "62.0",
+    version: BAP_REST_API_VERSION,
     oauth2: {
       clientId: BAP_CLIENT_ID,
       clientSecret: BAP_CLIENT_SECRET,
@@ -1340,12 +1345,14 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
   //   Applicant_Organization__r.Id
   //   Applicant_Organization__r.County__c
   //   Primary_Applicant__r.Id,
+  //   Primary_Applicant__r.Record_Type_Name__c,
   //   Primary_Applicant__r.FirstName,
   //   Primary_Applicant__r.LastName,
   //   Primary_Applicant__r.Title,
   //   Primary_Applicant__r.Email,
   //   Primary_Applicant__r.Phone,
   //   Alternate_Applicant__r.Id,
+  //   Alternate_Applicant__r.Record_Type_Name__c,
   //   Alternate_Applicant__r.FirstName,
   //   Alternate_Applicant__r.LastName,
   //   Alternate_Applicant__r.Title,
@@ -1358,6 +1365,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
   //   CSB_School_District__r.BillingState,
   //   CSB_School_District__r.BillingPostalCode,
   //   School_District_Contact__r.Id,
+  //   School_District_Contact__r.Record_Type_Name__c
   //   School_District_Contact__r.FirstName,
   //   School_District_Contact__r.LastName,
   //   School_District_Contact__r.Title,
@@ -1392,12 +1400,14 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         "Applicant_Organization__r.Id": 1,
         "Applicant_Organization__r.County__c": 1,
         "Primary_Applicant__r.Id": 1,
+        "Primary_Applicant__r.Record_Type_Name__c": 1,
         "Primary_Applicant__r.FirstName": 1,
         "Primary_Applicant__r.LastName": 1,
         "Primary_Applicant__r.Title": 1,
         "Primary_Applicant__r.Email": 1,
         "Primary_Applicant__r.Phone": 1,
         "Alternate_Applicant__r.Id": 1,
+        "Alternate_Applicant__r.Record_Type_Name__c": 1,
         "Alternate_Applicant__r.FirstName": 1,
         "Alternate_Applicant__r.LastName": 1,
         "Alternate_Applicant__r.Title": 1,
@@ -1410,6 +1420,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         "CSB_School_District__r.BillingState": 1,
         "CSB_School_District__r.BillingPostalCode": 1,
         "School_District_Contact__r.Id": 1,
+        "School_District_Contact__r.Record_Type_Name__c": 1,
         "School_District_Contact__r.FirstName": 1,
         "School_District_Contact__r.LastName": 1,
         "School_District_Contact__r.Title": 1,
@@ -1523,6 +1534,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
         //   Related_Line_Item__c,
         //   Relationship_Type__c,
         //   Contact__r.Id,
+        //   Contant__r.Record_Type_Name__c,
         //   Contact__r.FirstName,
         //   Contact__r.LastName
         //   Contact__r.Title,
@@ -1556,6 +1568,7 @@ async function queryBapFor2024PRFData(req, frfReviewItemId) {
               Related_Line_Item__c: 1,
               Relationship_Type__c: 1,
               "Contact__r.Id": 1,
+              "Contact__r.Record_Type_Name__c": 1,
               "Contact__r.FirstName": 1,
               "Contact__r.LastName": 1,
               "Contact__r.Title": 1,

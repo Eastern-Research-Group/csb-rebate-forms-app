@@ -3,6 +3,7 @@ const ObjectId = require("mongodb").ObjectId;
 // ---
 const {
   axiosFormio,
+  formioProjectUrl,
   formUrl,
   submissionPeriodOpen,
   formioCSBMetadata,
@@ -535,6 +536,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
 
             const {
               Id: contactId,
+              Record_Type_Name__c,
               FirstName,
               LastName,
               Title,
@@ -588,6 +590,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
                 _bap_org_id: orgId,
                 _bap_org_name: orgName,
                 _bap_org_contact_id_frf: contactId,
+                _bap_org_contact_recordtype: Record_Type_Name__c,
                 _bap_org_contact_fname: FirstName,
                 _bap_org_contact_lname: LastName,
                 _bap_org_contact_title: Title,
@@ -648,6 +651,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               org_id: existingOwnerRecord?.Contact__r?.Account?.Id,
               org_name: existingOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: existingOwnerRecord?.Contact__r?.Id,
+              org_contact_recordtype: existingOwnerRecord?.Contact__r?.Record_Type_Name__c, // prettier-ignore
               org_contact_fname: existingOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: existingOwnerRecord?.Contact__r?.LastName,
             },
@@ -668,6 +672,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
               org_id: newOwnerRecord?.Contact__r?.Account?.Id,
               org_name: newOwnerRecord?.Contact__r?.Account?.Name,
               org_contact_id: newOwnerRecord?.Contact__r?.Id,
+              org_contact_recordtype: newOwnerRecord?.Contact__r?.Record_Type_Name__c, // prettier-ignore
               org_contact_fname: newOwnerRecord?.Contact__r?.FirstName,
               org_contact_lname: newOwnerRecord?.Contact__r?.LastName,
             },
@@ -704,12 +709,14 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             _bap_govt_bus_poc_email: GOVT_BUS_POC_EMAIL__c,
             _bap_alt_govt_bus_poc_email: ALT_GOVT_BUS_POC_EMAIL__c,
             _bap_primary_id: Primary_Applicant__r?.Id,
+            _bap_primary_recordtype: Primary_Applicant__r?.Record_Type_Name__c,
             _bap_primary_fname: Primary_Applicant__r?.FirstName,
             _bap_primary_lname: Primary_Applicant__r?.LastName,
             _bap_primary_title: Primary_Applicant__r?.Title,
             _bap_primary_email: Primary_Applicant__r?.Email,
             _bap_primary_phone: Primary_Applicant__r?.Phone,
             _bap_alternate_id: Alternate_Applicant__r?.Id,
+            _bap_alternate_recordtype: Alternate_Applicant__r?.Record_Type_Name__c, // prettier-ignore
             _bap_alternate_fname: Alternate_Applicant__r?.FirstName,
             _bap_alternate_lname: Alternate_Applicant__r?.LastName,
             _bap_alternate_title: Alternate_Applicant__r?.Title,
@@ -731,6 +738,7 @@ function fetchDataForPRFSubmission({ rebateYear, req, res }) {
             },
             _bap_district_self_certify: Self_Certification_Category__c,
             _bap_district_contact_id: School_District_Contact__r?.Id,
+            _bap_district_contact_recordtype: School_District_Contact__r?.Record_Type_Name__c, // prettier-ignore
             _bap_district_contact_fname: School_District_Contact__r?.FirstName,
             _bap_district_contact_lname: School_District_Contact__r?.LastName,
             _bap_district_contact_title: School_District_Contact__r?.Title,
@@ -1079,6 +1087,101 @@ function downloadS3FileMetadata({ rebateYear, req, res }) {
       // NOTE: logged in axiosFormio response interceptor
       const errorStatus = error.response?.status || 500;
       const errorMessage = `Error downloading file from S3.`;
+      return res.status(errorStatus).json({ message: errorMessage });
+    });
+}
+
+/**
+ * @param {Object} param
+ * @param {RebateYear} param.rebateYear
+ * @param {express.Request} param.req
+ * @param {express.Response} param.res
+ */
+function fetchSubmissionPDF({ rebateYear, req, res }) {
+  const { bapComboKeys } = req;
+  const { mail } = req.user;
+  const { formType, mongoId } = req.params;
+
+  // NOTE: included to support EPA API scan
+  if (mongoId === formioExampleMongoId) {
+    return res.json("");
+  }
+
+  /** NOTE: verifyMongoObjectId */
+  if (!ObjectId.isValid(mongoId)) {
+    const errorStatus = 400;
+    const errorMessage = `MongoDB ObjectId validation error for: '${mongoId}'.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  const comboKeyFieldName = getComboKeyFieldName({ rebateYear });
+
+  const formioFormUrl = formUrl[rebateYear][formType];
+
+  if (!formioFormUrl) {
+    const errorStatus = 400;
+    const errorMessage = `Formio form URL does not exist for ${rebateYear} ${formType.toUpperCase()}.`;
+    return res.status(errorStatus).json({ message: errorMessage });
+  }
+
+  axiosFormio(req)
+    .get(`${formioFormUrl}/submission/${mongoId}`)
+    .then((axiosRes) => axiosRes.data)
+    .then((submission) => {
+      const projectId = submission.project;
+      const formId = submission.form;
+      const comboKey = submission.data?.[comboKeyFieldName];
+
+      if (!bapComboKeys.includes(comboKey)) {
+        const logMessage =
+          `User with email '${mail}' attempted to download a PDF of ` +
+          `${rebateYear} ${formType.toUpperCase()} submission '${mongoId}' ` +
+          `that they do not have access to.`;
+        log({ level: "warn", message: logMessage, req });
+
+        const errorStatus = 401;
+        const errorMessage = `Unauthorized.`;
+        return res.status(errorStatus).json({ message: errorMessage });
+      }
+
+      const headers = {
+        "x-allow": `GET:/project/${projectId}/form/${formId}/submission/${mongoId}/download`,
+        "x-expire": 3600,
+      };
+
+      axiosFormio(req)
+        .get(`${formioProjectUrl}/token`, { headers })
+        .then((axiosRes) => axiosRes.data)
+        .then((json) => {
+          const url = `${formioProjectUrl}/form/${formId}/submission/${mongoId}/download?token=${json.key}`;
+
+          axiosFormio(req)
+            .get(url, { responseType: "arraybuffer" })
+            .then((axiosRes) => axiosRes.data)
+            .then((fileData) => {
+              const base64String = Buffer.from(fileData).toString("base64");
+              res.attachment(`${mongoId}.pdf`);
+              res.type("application/pdf");
+              res.send(base64String);
+            })
+            .catch((error) => {
+              // NOTE: error is logged in axiosFormio response interceptor
+              const errorStatus = error.response?.status || 500;
+              const errorMessage = `Error getting Formio submission PDF.`;
+              return res.status(errorStatus).json({ message: errorMessage });
+            });
+        })
+        .catch((error) => {
+          // NOTE: error is logged in axiosFormio response interceptor
+          const errorStatus = error.response?.status || 500;
+          const errorMessage = `Error getting Formio download token.`;
+          return res.status(errorStatus).json({ message: errorMessage });
+        });
+    })
+    .catch((error) => {
+      // NOTE: error is logged in axiosFormio response interceptor
+      const errorStatus = error.response?.status || 500;
+      const errorMessage = `Error getting Formio ${rebateYear} ${formType.toUpperCase()} form submission '${mongoId}'.`;
       return res.status(errorStatus).json({ message: errorMessage });
     });
 }
@@ -1999,7 +2102,7 @@ function updateCRFSubmission({ rebateYear, req, res }) {
           return res.status(errorStatus).json({ message: errorMessage });
         });
     })
-    .catch((error) => {
+    .catch((_error) => {
       const logMessage =
         `User with email '${mail}' attempted to update ${rebateYear} CRF ` +
         `submission '${rebateId}' when the CSB CRF enrollment period was closed.`;
@@ -2214,6 +2317,8 @@ module.exports = {
   //
   uploadS3FileMetadata,
   downloadS3FileMetadata,
+  //
+  fetchSubmissionPDF,
   //
   fetchFRFSubmissions,
   createFRFSubmission,

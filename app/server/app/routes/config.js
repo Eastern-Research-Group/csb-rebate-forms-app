@@ -1,6 +1,10 @@
 const express = require("express");
 // ---
-const { submissionPeriodOpen } = require("../config/formio");
+const {
+  formioBaseUrl,
+  formioProjectName,
+  submissionPeriodOpen,
+} = require("../config/formio");
 const { ensureAuthenticated } = require("../middleware");
 
 const { CSB_REBATE_YEAR } = process.env;
@@ -16,6 +20,8 @@ router.get("/", (_req, res) => {
   const year = date.getFullYear().toString();
 
   return res.json({
+    formioBaseUrl,
+    formioProjectName,
     rebateYear: CSB_REBATE_YEAR || year,
     submissionPeriodOpen,
   });

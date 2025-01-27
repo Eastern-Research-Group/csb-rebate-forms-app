@@ -40,7 +40,9 @@ const {
   FORMIO_API_KEY,
 } = process.env;
 
-const formioProjectUrl = `${FORMIO_BASE_URL}/${FORMIO_PROJECT_NAME}`;
+const formioBaseUrl = FORMIO_BASE_URL;
+const formioProjectName = FORMIO_PROJECT_NAME;
+const formioProjectUrl = `${formioBaseUrl}/${FORMIO_PROJECT_NAME}`;
 
 /**
  * Stores form url for each form by rebate year.
@@ -166,6 +168,8 @@ const formioNoUserAccess = {
 
 module.exports = {
   axiosFormio,
+  formioBaseUrl,
+  formioProjectName,
   formioProjectUrl,
   formUrl,
   formIntroSubstring,

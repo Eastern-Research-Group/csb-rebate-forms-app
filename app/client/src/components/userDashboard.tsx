@@ -1,21 +1,21 @@
+import { useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Formio } from "@formio/react";
 import premium from "@formio/premium/lib/index.js";
 import uswds from "@formio/uswds";
 import icons from "uswds/img/sprite.svg";
 // ---
-import { serverUrl, formioBaseUrl, formioProjectUrl } from "@/config";
+import { serverUrl } from "@/config";
 import {
   useHelpdeskAccess,
   useConfigQuery,
+  useConfigData,
   useBapSamQuery,
   useBapSamData,
 } from "@/utilities";
 import { Loading } from "@/components/loading";
 import { useDialogActions } from "@/contexts/dialog";
 
-Formio.setBaseUrl(formioBaseUrl);
-Formio.setProjectUrl(formioProjectUrl);
 Formio.use(premium); /* eslint-disable-line react-hooks/rules-of-hooks */
 Formio.use(uswds); /* eslint-disable-line react-hooks/rules-of-hooks */
 
@@ -61,10 +61,23 @@ export function UserDashboard(props: { email: string }) {
   useConfigQuery();
   useBapSamQuery();
 
+  const configData = useConfigData();
   const bapSamData = useBapSamData();
 
   const { displayDialog } = useDialogActions();
   const helpdeskAccess = useHelpdeskAccess();
+
+  useEffect(() => {
+    const { formioBaseUrl, formioProjectName } = configData ?? {};
+
+    if (formioBaseUrl) {
+      Formio.setBaseUrl(formioBaseUrl);
+    }
+
+    if (formioBaseUrl && formioProjectName) {
+      Formio.setProjectUrl(`${formioBaseUrl}/${formioProjectName}`);
+    }
+  }, [configData]);
 
   const onSubmissionsPage = pathname === "/";
   const onHelpdeskPage = pathname === "/helpdesk";
@@ -93,7 +106,7 @@ export function UserDashboard(props: { email: string }) {
     });
   }
 
-  if (!bapSamData || !email) {
+  if (!configData || !bapSamData || !email) {
     return <Loading />;
   }
 

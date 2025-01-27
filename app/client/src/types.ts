@@ -25,6 +25,8 @@ export type UserData = {
 };
 
 export type ConfigData = {
+  formioBaseUrl: string;
+  formioProjectName: string;
   rebateYear: RebateYear;
   submissionPeriodOpen: {
     2022: { frf: boolean; prf: boolean; crf: boolean };

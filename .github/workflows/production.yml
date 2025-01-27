@@ -67,8 +67,6 @@ jobs:
         run: |
           VITE_SERVER_BASE_PATH="$SERVER_BASE_PATH" \
             VITE_CLOUD_SPACE="$CLOUD_SPACE" \
-            VITE_FORMIO_BASE_URL="$FORMIO_BASE_URL" \
-            VITE_FORMIO_PROJECT_NAME="$FORMIO_PROJECT_NAME" \
             npm run build
           rm ../server/app/public/index.html
           cd build

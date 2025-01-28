@@ -154,7 +154,7 @@ function SubmissionsTableHeader(props: { rebateYear: RebateYear }) {
         </th>
 
         {rebateYear === "2023" || rebateYear === "2024" ? (
-          <th scope="col" className={clsx("tw-text-right")}>
+          <th scope="col" className={clsx("tw:text-right")}>
             <TextWithTooltip
               text="Change Request"
               tooltip="Submit a change request for an extension, to request edits, or to withdraw from the rebate program"
@@ -452,7 +452,7 @@ function PRF2022Submission(props: { rebate: Rebate2022 }) {
                       <>
                         <p
                           className={clsx(
-                            "tw-text-sm tw-font-medium tw-text-gray-900",
+                            "tw:text-sm tw:font-medium tw:text-gray-900",
                           )}
                         >
                           Error creating Payment Request{" "}
@@ -460,7 +460,7 @@ function PRF2022Submission(props: { rebate: Rebate2022 }) {
                         </p>
                         <p
                           className={clsx(
-                            "tw-mt-1 tw-text-sm tw-text-gray-500",
+                            "tw:mt-1 tw:text-sm tw:text-gray-500",
                           )}
                         >
                           Please try again.
@@ -661,14 +661,14 @@ function CRF2022Submission(props: { rebate: Rebate2022 }) {
                       <>
                         <p
                           className={clsx(
-                            "tw-text-sm tw-font-medium tw-text-gray-900",
+                            "tw:text-sm tw:font-medium tw:text-gray-900",
                           )}
                         >
                           Error creating Close Out <em>{prf.bap?.rebateId}</em>.
                         </p>
                         <p
                           className={clsx(
-                            "tw-mt-1 tw-text-sm tw-text-gray-500",
+                            "tw:mt-1 tw:text-sm tw:text-gray-500",
                           )}
                         >
                           Please try again.
@@ -839,7 +839,7 @@ function Submissions2022() {
           className="usa-table usa-table--stacked usa-table--borderless width-full"
         >
           <SubmissionsTableHeader rebateYear="2022" />
-          <tbody className={clsx("[&_:is(th,td)]:tw-text-[15px]")}>
+          <tbody className={clsx("tw:[&_:is(th,td)]:text-[15px]")}>
             {submissions.map((rebate, index) => {
               return rebate.rebateYear === "2022" ? (
                 <Fragment key={rebate.rebateId}>
@@ -848,9 +848,9 @@ function Submissions2022() {
                   <CRF2022Submission rebate={rebate} />
                   {/* blank row after all submissions but the last one */}
                   {index !== submissions.length - 1 && (
-                    <tr className={clsx("tw-bg-white")}>
+                    <tr className={clsx("tw:bg-white")}>
                       <th
-                        className={clsx("p-0", "tw-leading-none")}
+                        className={clsx("p-0", "tw:leading-none")}
                         scope="row"
                         colSpan={6}
                       >
@@ -883,28 +883,28 @@ function ChangeRequests2023() {
   return (
     <details
       className={clsx(
-        "tw-mt-4 tw-border tw-border-solid tw-border-blue-100 tw-bg-blue-50",
-        "tw-group",
+        "tw:mt-4 tw:border tw:border-solid tw:border-blue-100 tw:bg-blue-50",
+        "tw:group",
       )}
       open
     >
       <summary
         className={clsx(
-          "tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-bg-blue-100 tw-p-2",
-          "marker:tw-content-none",
+          "tw:flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
+          "tw:marker:content-none",
         )}
       >
         <span
           className={clsx(
-            "tw-px-1 tw-text-[15px] tw-font-semibold tw-text-slate-800",
+            "tw:px-1 tw:text-[15px] tw:font-semibold tw:text-slate-800",
           )}
         >
           Your Change Requests
         </span>
         <ChevronUpIcon
           className={clsx(
-            "tw-h-5 tw-w-5 tw-rotate-90 tw-transform tw-text-slate-900 tw-duration-100",
-            "group-open:tw-rotate-180",
+            "tw:size-5 tw:rotate-90 tw:transform tw:text-slate-900 tw:duration-100",
+            "tw:group-open:rotate-180",
           )}
           aria-hidden="true"
         />
@@ -913,8 +913,8 @@ function ChangeRequests2023() {
       <div
         className={clsx(
           "usa-table-container--scrollable",
-          "tw-m-0 tw-p-1",
-          "[&_tr:last-of-type_:is(th,td)]:tw-border-b-0",
+          "tw:!m-0 tw:p-1",
+          "tw:[&_tr:last-of-type_:is(th,td)]:!border-b-0",
         )}
         tabIndex={0}
       >
@@ -952,7 +952,7 @@ function ChangeRequests2023() {
                 />
               </th>
 
-              <th scope="col" className={clsx("tw-text-right")}>
+              <th scope="col" className={clsx("tw:text-right")}>
                 <TextWithTooltip
                   text="Date"
                   tooltip="Date this request was submitted"
@@ -960,7 +960,7 @@ function ChangeRequests2023() {
               </th>
             </tr>
           </thead>
-          <tbody className={clsx("[&_:is(th,td)]:tw-text-[15px]")}>
+          <tbody className={clsx("tw:[&_:is(th,td)]:text-[15px]")}>
             {changeRequests.map((request, index) => {
               const { _id, modified, data } = request;
               const {
@@ -1002,7 +1002,7 @@ function ChangeRequests2023() {
 
                     <td>{_user_email}</td>
 
-                    <td className={clsx("min-[480px]:tw-text-right")}>
+                    <td className={clsx("tw:min-[480px]:text-right")}>
                       <span title={`${date} ${time}`}>{date}</span>
                     </td>
                   </tr>
@@ -1213,7 +1213,7 @@ handle when it's value is an empty string. */}
         <span title={`${date} ${time}`}>{date}</span>
       </td>
 
-      <td className={clsx("!tw-text-right")}>
+      <td className={clsx("tw:text-right")}>
         <ChangeRequest2023Button
           data={{
             formType: "frf",
@@ -1302,7 +1302,7 @@ function PRF2023Submission(props: { rebate: Rebate2023 }) {
                       <>
                         <p
                           className={clsx(
-                            "tw-text-sm tw-font-medium tw-text-gray-900",
+                            "tw:text-sm tw:font-medium tw:text-gray-900",
                           )}
                         >
                           Error creating Payment Request{" "}
@@ -1310,7 +1310,7 @@ function PRF2023Submission(props: { rebate: Rebate2023 }) {
                         </p>
                         <p
                           className={clsx(
-                            "tw-mt-1 tw-text-sm tw-text-gray-500",
+                            "tw:mt-1 tw:text-sm tw:text-gray-500",
                           )}
                         >
                           Please try again.
@@ -1437,7 +1437,7 @@ function PRF2023Submission(props: { rebate: Rebate2023 }) {
         <span title={`${date} ${time}`}>{date}</span>
       </td>
 
-      <td className={clsx("!tw-text-right")}>
+      <td className={clsx("tw:text-right")}>
         <ChangeRequest2023Button
           data={{
             formType: "prf",
@@ -1504,7 +1504,7 @@ function Submissions2023() {
           className="usa-table usa-table--stacked usa-table--borderless width-full"
         >
           <SubmissionsTableHeader rebateYear="2023" />
-          <tbody className={clsx("[&_:is(th,td)]:tw-text-[15px]")}>
+          <tbody className={clsx("tw:[&_:is(th,td)]:text-[15px]")}>
             {submissions.map((rebate, index) => {
               return rebate.rebateYear === "2023" ? (
                 <Fragment key={rebate.rebateId}>
@@ -1513,9 +1513,9 @@ function Submissions2023() {
                   {/* <CRF2023Submission rebate={rebate} /> */}
                   {/* blank row after all submissions but the last one */}
                   {index !== submissions.length - 1 && (
-                    <tr className={clsx("tw-bg-white")}>
+                    <tr className={clsx("tw:bg-white")}>
                       <th
-                        className={clsx("p-0", "tw-leading-none")}
+                        className={clsx("p-0", "tw:leading-none")}
                         scope="row"
                         colSpan={7}
                       >
@@ -1548,28 +1548,28 @@ function ChangeRequests2024() {
   return (
     <details
       className={clsx(
-        "tw-mt-4 tw-border tw-border-solid tw-border-blue-100 tw-bg-blue-50",
-        "tw-group",
+        "tw:mt-4 tw:border tw:border-solid tw:border-blue-100 tw:bg-blue-50",
+        "tw:group",
       )}
       open
     >
       <summary
         className={clsx(
-          "tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-bg-blue-100 tw-p-2",
-          "marker:tw-content-none",
+          "tw:flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
+          "tw:marker:content-none",
         )}
       >
         <span
           className={clsx(
-            "tw-px-1 tw-text-[15px] tw-font-semibold tw-text-slate-800",
+            "tw:px-1 tw:text-[15px] tw:font-semibold tw:text-slate-800",
           )}
         >
           Your Change Requests
         </span>
         <ChevronUpIcon
           className={clsx(
-            "tw-h-5 tw-w-5 tw-rotate-90 tw-transform tw-text-slate-900 tw-duration-100",
-            "group-open:tw-rotate-180",
+            "tw:size-5 tw:rotate-90 tw:transform tw:text-slate-900 tw:duration-100",
+            "tw:group-open:rotate-180",
           )}
           aria-hidden="true"
         />
@@ -1578,8 +1578,8 @@ function ChangeRequests2024() {
       <div
         className={clsx(
           "usa-table-container--scrollable",
-          "tw-m-0 tw-p-1",
-          "[&_tr:last-of-type_:is(th,td)]:tw-border-b-0",
+          "tw:!m-0 tw:p-1",
+          "tw:[&_tr:last-of-type_:is(th,td)]:!border-b-0",
         )}
         tabIndex={0}
       >
@@ -1617,7 +1617,7 @@ function ChangeRequests2024() {
                 />
               </th>
 
-              <th scope="col" className={clsx("tw-text-right")}>
+              <th scope="col" className={clsx("tw:text-right")}>
                 <TextWithTooltip
                   text="Date"
                   tooltip="Date this request was submitted"
@@ -1625,7 +1625,7 @@ function ChangeRequests2024() {
               </th>
             </tr>
           </thead>
-          <tbody className={clsx("[&_:is(th,td)]:tw-text-[15px]")}>
+          <tbody className={clsx("tw:[&_:is(th,td)]:text-[15px]")}>
             {changeRequests.map((request, index) => {
               const { _id, modified, data } = request;
               const {
@@ -1667,7 +1667,7 @@ function ChangeRequests2024() {
 
                     <td>{_user_email}</td>
 
-                    <td className={clsx("min-[480px]:tw-text-right")}>
+                    <td className={clsx("tw:min-[480px]:text-right")}>
                       <span title={`${date} ${time}`}>{date}</span>
                     </td>
                   </tr>
@@ -1866,7 +1866,7 @@ function FRF2024Submission(props: { rebate: Rebate2024 }) {
         <span title={`${date} ${time}`}>{date}</span>
       </td>
 
-      <td className={clsx("!tw-text-right")}>
+      <td className={clsx("tw:text-right")}>
         <ChangeRequest2024Button
           data={{
             formType: "frf",
@@ -1958,7 +1958,7 @@ function PRF2024Submission(props: { rebate: Rebate2024 }) {
                       <>
                         <p
                           className={clsx(
-                            "tw-text-sm tw-font-medium tw-text-gray-900",
+                            "tw:text-sm tw:font-medium tw:text-gray-900",
                           )}
                         >
                           Error creating Payment Request{" "}
@@ -1966,7 +1966,7 @@ function PRF2024Submission(props: { rebate: Rebate2024 }) {
                         </p>
                         <p
                           className={clsx(
-                            "tw-mt-1 tw-text-sm tw-text-gray-500",
+                            "tw:mt-1 tw:text-sm tw:text-gray-500",
                           )}
                         >
                           Please try again.
@@ -2099,7 +2099,7 @@ function PRF2024Submission(props: { rebate: Rebate2024 }) {
         <span title={`${date} ${time}`}>{date}</span>
       </td>
 
-      <td className={clsx("!tw-text-right")}>
+      <td className={clsx("tw:text-right")}>
         <ChangeRequest2024Button
           data={{
             formType: "prf",
@@ -2169,7 +2169,7 @@ function Submissions2024() {
           className="usa-table usa-table--stacked usa-table--borderless width-full"
         >
           <SubmissionsTableHeader rebateYear="2024" />
-          <tbody className={clsx("[&_:is(th,td)]:tw-text-[15px]")}>
+          <tbody className={clsx("tw:[&_:is(th,td)]:text-[15px]")}>
             {submissions.map((rebate, index) => {
               return rebate.rebateYear === "2024" ? (
                 <Fragment key={rebate.rebateId}>
@@ -2178,9 +2178,9 @@ function Submissions2024() {
                   {/* <CRF2024Submission rebate={rebate} /> */}
                   {/* blank row after all submissions but the last one */}
                   {index !== submissions.length - 1 && (
-                    <tr className={clsx("tw-bg-white")}>
+                    <tr className={clsx("tw:bg-white")}>
                       <th
-                        className={clsx("p-0", "tw-leading-none")}
+                        className={clsx("p-0", "tw:leading-none")}
                         scope="row"
                         colSpan={7}
                       >
@@ -2237,7 +2237,7 @@ export function Submissions() {
             <select
               id="rebate-year"
               className={clsx(
-                "tw-rounded-md tw-border-0 tw-text-sm tw-font-bold tw-leading-4 tw-ring-1 tw-ring-inset tw-ring-gray-300",
+                "tw:rounded-md tw:border-0 tw:!text-sm tw:font-bold tw:leading-4 tw:ring-1 tw:ring-inset tw:ring-gray-300",
               )}
               name="rebate-year"
               onChange={(ev) => setRebateYear(ev.target.value as RebateYear)}

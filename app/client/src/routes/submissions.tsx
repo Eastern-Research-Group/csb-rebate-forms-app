@@ -890,7 +890,7 @@ function ChangeRequests2023() {
     >
       <summary
         className={clsx(
-          "tw:flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
+          "tw:!flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
           "tw:marker:content-none",
         )}
       >
@@ -1555,7 +1555,7 @@ function ChangeRequests2024() {
     >
       <summary
         className={clsx(
-          "tw:flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
+          "tw:!flex tw:cursor-pointer tw:items-center tw:justify-between tw:bg-blue-100 tw:p-2",
           "tw:marker:content-none",
         )}
       >

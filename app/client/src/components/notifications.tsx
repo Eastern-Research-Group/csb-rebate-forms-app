@@ -80,7 +80,12 @@ export function Notifications() {
                     ) : null}
                   </div>
 
-                  <div className={clsx("tw:mx-3 tw:w-0 tw:flex-1 tw:pt-0.5")}>
+                  <div
+                    className={clsx(
+                      "tw:mx-3 tw:w-0 tw:flex-1 tw:pt-0.5",
+                      "tw:[&_p]:!mb-0",
+                    )}
+                  >
                     {body}
                   </div>
 

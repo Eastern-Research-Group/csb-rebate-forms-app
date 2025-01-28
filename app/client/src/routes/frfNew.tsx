@@ -246,7 +246,7 @@ export function FRFNew() {
                     <>
                       {content && (
                         <MarkdownContent
-                          className={clsx("tw:mt-4 tw:[&_h2]:text-center")}
+                          className={clsx("tw:mt-4", "tw:[&_h2]:text-center")}
                           children={content.newFRFDialog}
                           components={{
                             h2: (props) => (

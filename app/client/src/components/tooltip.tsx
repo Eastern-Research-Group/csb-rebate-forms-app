@@ -16,7 +16,7 @@ export function TextWithTooltip(props: {
         <Trigger asChild>
           <button
             className={clsx(
-              "tw-m-0 tw-flex tw-rounded-full tw-border-0 tw-bg-transparent tw-p-0",
+              "tw:m-0 tw:flex tw:rounded-full tw:border-0 tw:bg-transparent tw:p-0",
             )}
           >
             <svg
@@ -32,7 +32,7 @@ export function TextWithTooltip(props: {
 
         <Portal>
           <Content
-            className="border-0 radius-md padding-y-05 padding-x-105 font-sans-2xs text-white"
+            className="radius-md padding-y-05 padding-x-105 font-sans-2xs border-0 text-white"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.875)" }}
             align="start"
             alignOffset={-5}

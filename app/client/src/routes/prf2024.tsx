@@ -295,16 +295,16 @@ function PaymentRequestForm(props: { email: string }) {
       )}
 
       <Dialog as="div" open={dataIsPosting.current} onClose={(_value) => {}}>
-        <div className={clsx("tw-fixed tw-inset-0 tw-bg-black/30")} />
-        <div className={clsx("tw-fixed tw-inset-0 tw-z-20")}>
+        <div className={clsx("tw:fixed tw:inset-0 tw:bg-black/30")} />
+        <div className={clsx("tw:fixed tw:inset-0 tw:z-20")}>
           <div
             className={clsx(
-              "tw-flex tw-min-h-full tw-items-center tw-justify-center",
+              "tw:flex tw:min-h-full tw:items-center tw:justify-center",
             )}
           >
             <Dialog.Panel
               className={clsx(
-                "tw-rounded-lg tw-bg-white tw-px-4 tw-pb-4 tw-shadow-xl",
+                "tw:rounded-lg tw:bg-white tw:px-4 tw:pb-4 tw:shadow-xl",
               )}
             >
               <Loading />
@@ -375,7 +375,7 @@ function PaymentRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       {onSubmitSubmission.state === "submitted" ? (
@@ -408,7 +408,7 @@ function PaymentRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       {onSubmitSubmission.state === "submitted" ? (
@@ -476,7 +476,7 @@ function PaymentRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       Draft saved successfully.
@@ -492,7 +492,7 @@ function PaymentRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       Error saving draft.

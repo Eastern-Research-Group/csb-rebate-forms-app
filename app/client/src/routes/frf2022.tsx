@@ -268,11 +268,11 @@ function FundingRequestForm(props: { email: string }) {
             body: (
               <>
                 <p
-                  className={clsx("tw-text-sm tw-font-medium tw-text-gray-900")}
+                  className={clsx("tw:text-sm tw:font-medium tw:text-gray-900")}
                 >
                   Error deleting Payment Request <em>{rebate.rebateId}</em>.
                 </p>
-                <p className={clsx("tw-mt-1 tw-text-sm tw-text-gray-500")}>
+                <p className={clsx("tw:mt-1 tw:text-sm tw:text-gray-500")}>
                   Please notify the helpdesk that a problem exists preventing
                   the deletion of Payment Request form submission{" "}
                   <em>{rebate.rebateId}</em>.
@@ -289,7 +289,7 @@ function FundingRequestForm(props: { email: string }) {
         displayInfoNotification({
           id: Date.now(),
           body: (
-            <p className={clsx("tw-text-sm tw-font-medium tw-text-gray-900")}>
+            <p className={clsx("tw:text-sm tw:font-medium tw:text-gray-900")}>
               Deleting Payment Request <em>{rebate.rebateId}</em>...
             </p>
           ),
@@ -312,12 +312,12 @@ function FundingRequestForm(props: { email: string }) {
                 <>
                   <p
                     className={clsx(
-                      "tw-text-sm tw-font-medium tw-text-gray-900",
+                      "tw:text-sm tw:font-medium tw:text-gray-900",
                     )}
                   >
                     Error deleting Payment Request <em>{rebate.rebateId}</em>.
                   </p>
-                  <p className={clsx("tw-mt-1 tw-text-sm tw-text-gray-500")}>
+                  <p className={clsx("tw:mt-1 tw:text-sm tw:text-gray-500")}>
                     Please reload the page to attempt the deletion again, or
                     contact the helpdesk if the problem persists.
                   </p>
@@ -422,16 +422,16 @@ function FundingRequestForm(props: { email: string }) {
       </p>
 
       <Dialog as="div" open={dataIsPosting.current} onClose={(_value) => {}}>
-        <div className={clsx("tw-fixed tw-inset-0 tw-bg-black/30")} />
-        <div className={clsx("tw-fixed tw-inset-0 tw-z-20")}>
+        <div className={clsx("tw:fixed tw:inset-0 tw:bg-black/30")} />
+        <div className={clsx("tw:fixed tw:inset-0 tw:z-20")}>
           <div
             className={clsx(
-              "tw-flex tw-min-h-full tw-items-center tw-justify-center",
+              "tw:flex tw:min-h-full tw:items-center tw:justify-center",
             )}
           >
             <Dialog.Panel
               className={clsx(
-                "tw-rounded-lg tw-bg-white tw-px-4 tw-pb-4 tw-shadow-xl",
+                "tw:rounded-lg tw:bg-white tw:px-4 tw:pb-4 tw:shadow-xl",
               )}
             >
               <Loading />
@@ -505,7 +505,7 @@ function FundingRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       {onSubmitSubmission.state === "submitted" ? (
@@ -537,7 +537,7 @@ function FundingRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       {onSubmitSubmission.state === "submitted" ? (
@@ -610,7 +610,7 @@ function FundingRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       Draft saved successfully.
@@ -626,7 +626,7 @@ function FundingRequestForm(props: { email: string }) {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       Error saving draft.

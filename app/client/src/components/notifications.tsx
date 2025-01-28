@@ -56,7 +56,7 @@ export function Notifications() {
             >
               <div className={clsx("tw-p-4")}>
                 <div className={clsx("tw-flex tw-items-start")}>
-                  <div className={clsx("tw-flex-shrink-0")}>
+                  <div className={clsx("tw-shrink-0")}>
                     {type === "info" ? (
                       <InformationCircleIcon
                         className={clsx("tw-h-6 tw-w-6 tw-text-blue-400")}
@@ -84,7 +84,7 @@ export function Notifications() {
                     {body}
                   </div>
 
-                  <div className={clsx("tw-flex-shrink-0")}>
+                  <div className={clsx("tw-shrink-0")}>
                     <button
                       className={clsx(
                         "tw-inline-flex tw-rounded-md tw-bg-white tw-text-gray-400 tw-transition-none",

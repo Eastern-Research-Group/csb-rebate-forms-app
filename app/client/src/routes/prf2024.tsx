@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { Dialog } from "@headlessui/react";
+import { Providers } from "@formio/js";
 import { Formio, Form } from "@formio/react";
-import s3 from "formiojs/providers/storage/s3";
 import clsx from "clsx";
 import { cloneDeep, isEqual } from "lodash";
 import icons from "uswds/img/sprite.svg";
@@ -67,7 +67,7 @@ function useFormioSubmissionQueryAndMutation(rebateId: string | undefined) {
         }) {
           const s3Formio = cloneDeep(formio);
           s3Formio.formUrl = `${serverUrl}/api/formio/2024/s3/prf/${mongoId}/${comboKey}`;
-          return s3(s3Formio);
+          return Providers.providers.storage.s3(s3Formio);
         };
 
         return Promise.resolve(res);

@@ -6,8 +6,8 @@ import {
   useQuery,
   useMutation,
 } from "@tanstack/react-query";
+import { Providers } from "@formio/js";
 import { Formio, Form } from "@formio/react";
-import s3 from "formiojs/providers/storage/s3";
 import clsx from "clsx";
 import { cloneDeep } from "lodash";
 import icon from "uswds/img/usa-icons-bg/search--white.svg";
@@ -422,7 +422,7 @@ export function Helpdesk() {
         }) {
           const s3Formio = cloneDeep(formio);
           s3Formio.formUrl = `${serverUrl}/api/help/formio/s3/${rebateYear}/${formType}`;
-          return s3(s3Formio);
+          return Providers.providers.storage.s3(s3Formio);
         };
 
         return Promise.resolve(res);

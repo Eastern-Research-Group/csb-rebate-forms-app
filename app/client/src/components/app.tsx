@@ -15,7 +15,8 @@ import "bootstrap/dist/css/bootstrap-grid.min.css";
 import "@formio/uswds/dist/uswds.min.css";
 import "@formio/choices.js/public/assets/styles/choices.min.css";
 import "@formio/premium/dist/premium.css";
-import "formiojs/dist/formio.full.min.css";
+import "@formio/js/dist/formio.full.min.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 // ---
 import { serverBasePath, serverUrl, cloudSpace, messages } from "@/config";
 import {

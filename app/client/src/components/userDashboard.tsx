@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import bootstrap4 from "@formio/bootstrap/bootstrap4";
 import { Formio } from "@formio/react";
 import premium from "@formio/premium/lib/index.js";
 import uswds from "@formio/uswds";
@@ -16,6 +17,7 @@ import {
 import { Loading } from "@/components/loading";
 import { useDialogActions } from "@/contexts/dialog";
 
+Formio.use(bootstrap4); /* eslint-disable-line react-hooks/rules-of-hooks */
 Formio.use(premium); /* eslint-disable-line react-hooks/rules-of-hooks */
 Formio.use(uswds); /* eslint-disable-line react-hooks/rules-of-hooks */
 

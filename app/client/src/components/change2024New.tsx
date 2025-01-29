@@ -74,15 +74,15 @@ export function ChangeRequest2024Button(props: { data: ChangeRequestData }) {
     <>
       <button
         className={clsx(
-          "tw-cursor-pointer tw-border-0 tw-border-b-[1.5px] tw-border-transparent tw-bg-transparent tw-p-0 tw-text-sm tw-leading-tight",
-          "hover:tw-border-b-slate-800",
-          "focus:tw-border-b-slate-800",
+          "tw:cursor-pointer tw:border-0 tw:border-b-[1.5px] tw:border-transparent tw:bg-transparent tw:p-0 tw:text-sm tw:leading-tight",
+          "tw:hover:border-b-slate-800",
+          "tw:focus:border-b-slate-800",
         )}
         type="button"
         onClick={(_ev) => setDialogShown(true)}
       >
-        <span className={clsx("tw-flex tw-items-center")}>
-          <span className={clsx("tw-mr-1")}>Change</span>
+        <span className={clsx("tw:flex tw:items-center")}>
+          <span className={clsx("tw:mr-1")}>Change</span>
           <svg
             className="usa-icon"
             aria-hidden="true"
@@ -121,73 +121,73 @@ function ChangeRequest2024Dialog(props: {
     <Transition.Root show={dialogShown} as={Fragment}>
       <Dialog
         as="div"
-        className={clsx("tw-relative tw-z-10")}
+        className={clsx("tw:relative tw:z-10")}
         open={dialogShown}
         onClose={(_value) => closeDialog()}
       >
         <Transition.Child
           as={Fragment}
-          enter={clsx("tw-duration-300 tw-ease-out")}
-          enterFrom={clsx("tw-opacity-0")}
-          enterTo={clsx("tw-opacity-100")}
-          leave={clsx("tw-duration-200 tw-ease-in")}
-          leaveFrom={clsx("tw-opacity-100")}
-          leaveTo={clsx("tw-opacity-0")}
+          enter={clsx("tw:duration-300 tw:ease-out")}
+          enterFrom={clsx("tw:opacity-0")}
+          enterTo={clsx("tw:opacity-100")}
+          leave={clsx("tw:duration-200 tw:ease-in")}
+          leaveFrom={clsx("tw:opacity-100")}
+          leaveTo={clsx("tw:opacity-0")}
         >
           <div
             className={clsx(
-              "tw-fixed tw-inset-0 tw-bg-black/70 tw-transition-colors",
+              "tw:fixed tw:inset-0 tw:bg-black/70 tw:transition-colors",
             )}
           />
         </Transition.Child>
 
-        <div className={clsx("tw-fixed tw-inset-0 tw-z-10 tw-overflow-y-auto")}>
+        <div className={clsx("tw:fixed tw:inset-0 tw:z-10 tw:overflow-y-auto")}>
           <div
             className={clsx(
-              "tw-flex tw-min-h-full tw-items-center tw-justify-center tw-p-4",
+              "tw:flex tw:min-h-full tw:items-center tw:justify-center tw:p-4",
             )}
           >
             <Transition.Child
               as={Fragment}
-              enter={clsx("tw-duration-300 tw-ease-out")}
-              enterFrom={clsx("tw-translate-y-0 tw-opacity-0")}
-              enterTo={clsx("tw-translate-y-0 tw-opacity-100")}
-              leave={clsx("tw-duration-200 tw-ease-in")}
-              leaveFrom={clsx("tw-translate-y-0 tw-opacity-100")}
-              leaveTo={clsx("tw-translate-y-0 tw-opacity-0")}
+              enter={clsx("tw:duration-300 tw:ease-out")}
+              enterFrom={clsx("tw:translate-y-0 tw:opacity-0")}
+              enterTo={clsx("tw:translate-y-0 tw:opacity-100")}
+              leave={clsx("tw:duration-200 tw:ease-in")}
+              leaveFrom={clsx("tw:translate-y-0 tw:opacity-100")}
+              leaveTo={clsx("tw:translate-y-0 tw:opacity-0")}
             >
               {/* <Dialog.Panel> */}
               <div
                 className={clsx(
-                  "tw-relative tw-transform tw-overflow-hidden tw-rounded-lg tw-bg-white tw-p-4 tw-shadow-xl tw-transition-all",
-                  "sm:tw-w-full sm:tw-max-w-7xl sm:tw-p-6",
+                  "tw:relative tw:transform tw:overflow-hidden tw:rounded-lg tw:bg-white tw:p-4 tw:shadow-xl tw:transition-all",
+                  "tw:sm:w-full tw:sm:max-w-7xl tw:sm:p-6",
                 )}
               >
                 <div className="twpf">
                   <div
                     className={clsx(
-                      "tw-absolute tw-right-0 tw-top-0 tw-pr-4 tw-pt-4",
+                      "tw:absolute tw:right-0 tw:top-0 tw:pr-4 tw:pt-4",
                     )}
                   >
                     <button
                       className={clsx(
-                        "tw-rounded-md tw-bg-white tw-text-gray-400 tw-transition-none",
-                        "hover:tw-text-gray-700",
-                        "focus:tw-text-gray-700",
+                        "tw:rounded-md tw:bg-white tw:text-gray-400 tw:transition-none",
+                        "tw:hover:text-gray-700",
+                        "tw:focus:text-gray-700",
                       )}
                       type="button"
                       onClick={(_ev) => closeDialog()}
                     >
-                      <span className={clsx("tw-sr-only")}>Close</span>
+                      <span className={clsx("tw:sr-only")}>Close</span>
                       <XMarkIcon
-                        className={clsx("tw-h-6 tw-w-6 tw-transition-none")}
+                        className={clsx("tw:size-6 tw:transition-none")}
                         aria-hidden="true"
                       />
                     </button>
                   </div>
                 </div>
 
-                <div className={clsx("tw-m-auto tw-max-w-6xl tw-p-4")}>
+                <div className={clsx("tw:m-auto tw:max-w-6xl tw:p-4")}>
                   <ChangeRequest2024Form
                     data={data}
                     closeDialog={closeDialog}
@@ -271,16 +271,16 @@ function ChangeRequest2024Form(props: {
       {content && <MarkdownContent children={content.newChangeIntro} />}
 
       <Dialog as="div" open={dataIsPosting.current} onClose={(_value) => {}}>
-        <div className={clsx("tw-fixed tw-inset-0 tw-z-20 tw-bg-black/30")} />
-        <div className={clsx("tw-fixed tw-inset-0 tw-z-20")}>
+        <div className={clsx("tw:fixed tw:inset-0 tw:z-20 tw:bg-black/30")} />
+        <div className={clsx("tw:fixed tw:inset-0 tw:z-20")}>
           <div
             className={clsx(
-              "tw-flex tw-min-h-full tw-items-center tw-justify-center",
+              "tw:flex tw:min-h-full tw:items-center tw:justify-center",
             )}
           >
             <Dialog.Panel
               className={clsx(
-                "tw-rounded-lg tw-bg-white tw-px-4 tw-pb-4 tw-shadow-xl",
+                "tw:rounded-lg tw:bg-white tw:px-4 tw:pb-4 tw:shadow-xl",
               )}
             >
               <Loading />
@@ -333,7 +333,7 @@ function ChangeRequest2024Form(props: {
                   body: (
                     <p
                       className={clsx(
-                        "tw-text-sm tw-font-medium tw-text-gray-900",
+                        "tw:text-sm tw:font-medium tw:text-gray-900",
                       )}
                     >
                       Change Request <em>{res._id}</em> submitted successfully.
@@ -354,7 +354,7 @@ function ChangeRequest2024Form(props: {
                     <>
                       <p
                         className={clsx(
-                          "tw-text-sm tw-font-medium tw-text-gray-900",
+                          "tw:text-sm tw:font-medium tw:text-gray-900",
                         )}
                       >
                         Error creating Change Request for{" "}
@@ -364,7 +364,7 @@ function ChangeRequest2024Form(props: {
                         .
                       </p>
                       <p
-                        className={clsx("tw-mt-1 tw-text-sm tw-text-gray-500")}
+                        className={clsx("tw:mt-1 tw:text-sm tw:text-gray-500")}
                       >
                         Please try again.
                       </p>

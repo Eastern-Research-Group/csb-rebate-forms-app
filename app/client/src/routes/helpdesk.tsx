@@ -349,7 +349,7 @@ function ResultTableRow(props: {
         </button>
       </td>
 
-      <td className={clsx("!tw-text-right")}>
+      <td className={clsx("tw:text-right")}>
         <button
           className="usa-button font-sans-2xs margin-right-0 padding-x-105 padding-y-1"
           type="button"
@@ -490,7 +490,7 @@ export function Helpdesk() {
             <select
               id="rebate-year"
               className={clsx(
-                "tw-rounded-md tw-border-0 tw-text-sm tw-font-bold tw-leading-4 tw-ring-1 tw-ring-inset tw-ring-gray-300",
+                "tw:rounded-md tw:border-0 tw:!text-sm tw:font-bold tw:leading-4 tw:ring-1 tw:ring-inset tw:ring-gray-300",
               )}
               name="rebate-year"
               onChange={(ev) => {
@@ -686,7 +686,7 @@ export function Helpdesk() {
                     />
                   </th>
 
-                  <th scope="col" className={clsx("tw-text-right")}>
+                  <th scope="col" className={clsx("tw:text-right")}>
                     <TextWithTooltip
                       text="Download PDF"
                       tooltip="Download a PDF of this submission"

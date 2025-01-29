@@ -1927,13 +1927,12 @@ function verifyBapConnection(req, { name, args }) {
       const logMessage = `BAP Error: ${err}.`;
       log({ level: "error", message: logMessage, req, otherInfo: err });
 
-      // TODO: Handle the following error:
-      // Error: Unable to refresh session due to: No refresh token found in the connection.
+      const errorMessage = err?.message || err;
 
-      if (err?.includes("No refresh token found in the connection.")) {
+      if (errorMessage?.includes("No refresh token found in the connection")) {
         log({ level: "info", message: "Re-establishing BAP connection.", req });
 
-        // Re-establish the BAP connection.
+        return setupConnection(req).then(() => callback());
       }
 
       throw err;

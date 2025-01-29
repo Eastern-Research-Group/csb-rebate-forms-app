@@ -158,12 +158,20 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Open enrollment status (true/false) for each form, by rebate year.",
+            "description": "Formio base URL and project name, CSB rebate year and open enrollment status.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "formioBaseUrl": {
+                      "type": "string",
+                      "example": "https://api.form.io"
+                    },
+                    "formioProjectName": {
+                      "type": "string",
+                      "example": "forms"
+                    },
                     "rebateYear": {
                       "schema": {
                         "type": "string",

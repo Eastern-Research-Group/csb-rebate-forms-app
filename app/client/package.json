@@ -35,6 +35,7 @@
     "vite": "6.0.11"
   },
   "dependencies": {
+    "@formio/bootstrap": "3.0.0",
     "@formio/js": "5.0.0",
     "@formio/premium": "1.18.4",
     "@formio/react": "5.2.3",
